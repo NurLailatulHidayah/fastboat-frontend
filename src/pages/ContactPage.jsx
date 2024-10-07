@@ -60,13 +60,13 @@ const ContactPage = () => {
       {/* End Gallery Five */}
 
       {/* Gallery Five */}
-      <section className="booking-one">
+      <section className="booking-one ">
         <div className="container">
-          <div className="row clearfix">
+          <div className="row clearfix ">
             {/* Contact Column */}
-            <div className="contact-column col-lg-8 col-md-7 col-sm-12">
+            <div className="contact-column col-lg-8 col-md-7 col-sm-12 ">
               <div className="title-box">
-                <h4>Send Us a Massage</h4>
+                <h4 style={{fontFamily:"Poppins", fontSize:"26px"}}>Send Us a Massage</h4>
               </div>
               {/* Contact Form */}
               <div className="booking-form">
@@ -83,6 +83,7 @@ const ContactPage = () => {
                           type="text"
                           name="name"
                           placeholder="Name"
+                          
                           required
                         />
                       </div>
@@ -95,6 +96,7 @@ const ContactPage = () => {
                           type="email"
                           name="email"
                           placeholder="Email Address"
+                          
                           required
                         />
                       </div>
@@ -107,6 +109,8 @@ const ContactPage = () => {
                           type="number"
                           name="phone"
                           placeholder="Phone Number"
+                          
+                          required
                         />
                       </div>
                     </div>
@@ -118,6 +122,7 @@ const ContactPage = () => {
                           type="text"
                           name="name"
                           placeholder="Subjek"
+                          
                           required
                         />
                       </div>
@@ -129,12 +134,13 @@ const ContactPage = () => {
                         <textarea
                           name="text"
                           placeholder="Enter Text"
+                          
                           defaultValue={""}
                         />
                       </div>
                     </div>
-                    <div className="col-lg-12">
-                      <button type="submit" className="btn-style-two theme-btn">
+                    <div className="col-lg-12 text-end">
+                      <button type="submit" className="btn-style-two theme-btn ">
                         <span className="btn-wrap">
                           <span className="text-one">Send Message</span>
                           <span className="text-two">Send Message</span>

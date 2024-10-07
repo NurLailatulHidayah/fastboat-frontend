@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import PaymentComponent from "../components/PaymentComponent";
+import DekstopPaymentComponent from "../components/DekstopPaymentComponent";
 
 const PaymentPage = () => {
-  // State untuk menyimpan metode pembayaran yang dipilih
-  // const [selectedPayment, setSelectedPayment] = useState("");
 
-  // const handlePaymentSelect = (method) => {
-  //   setSelectedPayment(method);
-  // };
+  // Tambahkan state untuk negara
+  const [selectedCountry, setSelectedCountry] = useState("Indonesia"); // Inisialisasi dengan nilai default
 
-  const [isModal, setIsModal] = useState(false); // State untuk cek modal
-  const [selectedPayment, setSelectedPayment] = useState(null); // State untuk payment method
+  const [isModal, setIsModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null); 
 
   // Function untuk handle klik tombol pembayaran
   const handlePaymentSelect = (method) => {
     setSelectedPayment(method);
   };
+
+  
 
   // Function untuk cek ukuran layar
   const checkScreenSize = () => {
@@ -31,10 +32,24 @@ const PaymentPage = () => {
     };
   }, []);
 
+
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 999);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 999);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <section className="m-5">
-      <div className="accordion accordion-flush" id="accordionFlushExample">
-        {/* Accordion Item 1 */}
+    <section className="row clearfix m-5">
+      <div className="col-lg-8 accordion accordion-flush" id="accordionFlushExample">
+        {/* Itinerary */}
         <div className="accordion-item border border-black rounded">
           <h2 className="accordion-header  ">
             <button
@@ -56,7 +71,6 @@ const PaymentPage = () => {
           >
             <div className="accordion-body opacity-100 m-3">
               {" "}
-              {/* Opacity fixed */}
               <div className="row clearfix   border border-dark rounded-1">
                 <div className="d-flex ">
                   <div className="col-lg-4 align-content-center align-items-start px-1">
@@ -119,11 +133,11 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        {/* Accordion Item 2 */}
+        {/* Contact */}
         <div className="card border border-black">
           {/* Header Card */}
           <div className="card-header d-flex justify-content-between align-items-center px-3 py-3">
-            {/* Text Contact di Ujung Kiri */}
+            {/* Text Contact  */}
             <div
               className="fw-bolder p-2"
               style={{
@@ -136,7 +150,7 @@ const PaymentPage = () => {
               Contact
             </div>
 
-            {/* Icon Edit di Ujung Kanan */}
+            {/* Icon Edit */}
             <button
               type="button"
               className="btn btn-link p-0"
@@ -148,7 +162,7 @@ const PaymentPage = () => {
             </button>
           </div>
 
-          {/* Body Card (Tabel Kontak) */}
+          {/* Contact */}
           <div className="card-body table-responsive">
             <table className="table">
               <thead className="table-dark text-white">
@@ -173,7 +187,7 @@ const PaymentPage = () => {
             </div>
           </div>
 
-          {/* Modal untuk mengedit data */}
+          {/* Modal Edit Contact */}
           <div
             className="modal fade"
             id="editModal"
@@ -184,7 +198,11 @@ const PaymentPage = () => {
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title" id="editModalLabel">
+                  <h5
+                    className="modal-title fw-"
+                    id="editModalLabel"
+                    style={{ fontFamily: "Poppins" }}
+                  >
                     Edit Contact
                   </h5>
                   <button
@@ -205,6 +223,7 @@ const PaymentPage = () => {
                         type="text"
                         className="form-control"
                         id="name"
+                        autoComplete="name"
                         defaultValue="laila"
                       />
                     </div>
@@ -216,6 +235,7 @@ const PaymentPage = () => {
                         type="email"
                         className="form-control"
                         id="email"
+                        autoComplete="email"
                         defaultValue="laila@gmail.com"
                       />
                     </div>
@@ -227,23 +247,26 @@ const PaymentPage = () => {
                         type="tel"
                         className="form-control"
                         id="phone"
+                        autoComplete="phone"
                         defaultValue="+6281984530213"
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="country" className="form-label">
+                      <label htmlFor="nationality" className="form-label">
                         Negara
                       </label>
                       <select
                         className="form-select py-2 opacity-75"
-                        id="validationCustom04"
+                        id="nationality"
+                        autoComplete="nationality"
+                        value={selectedCountry}
+                        onChange={(e) => setSelectedCountry(e.target.value)}
                         required
                       >
-                        <option selected value>
-                          Armenia
-                        </option>
-                        <option>Indonesia</option>
+                        <option value="Armenia">Armenia</option>
+                        <option value="Indonesia">Indonesia</option>
                       </select>
+
                       {/* <input
                         type="text"
                         className="form-control"
@@ -267,7 +290,7 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        {/* Accordion Item 3 */}
+        {/* Passenger Details */}
         <div className=" border border-black rounded">
           <h2 className="accordion-header">
             <button
@@ -321,7 +344,7 @@ const PaymentPage = () => {
           </div>
         </div>
 
-        {/* Accordion Item 4 */}
+        {/* Booking details */}
         <div className="accordion-item border border-black rounded-2">
           <h2 className="accordion-header">
             <button
@@ -343,65 +366,62 @@ const PaymentPage = () => {
           >
             <div className="col-12 d-flex accordion-body opacity-100">
               <div className="col-lg-6 p-2">
-              <h4
-                className="fw-bolder"
-                style={{ fontSize: "16px", fontFamily: "Poppins" }}
-              >
-                Departure Trip
-              </h4>
-              <div className="d-flex justify-content-between">
-                <div>Adult 2x</div>
-                <div>IDR 375.000</div>
+                <h4
+                  className="fw-bolder"
+                  style={{ fontSize: "16px", fontFamily: "Poppins" }}
+                >
+                  Departure Trip
+                </h4>
+                <div className="d-flex justify-content-between">
+                  <div>Adult 2x</div>
+                  <div>IDR 375.000</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div>Child 0x</div>
+                  <div>IDR 375.000</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div>Infant 0x</div>
+                  <div>IDR 0</div>
+                </div>
+                <div className="d-flex justify-content-between fw-bolder mb-3">
+                  <div>Subtotal</div>
+                  <div>IDR 750.000</div>
+                </div>
+                <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
+                  <div>Pay Amount</div>
+                  <div>IDR 750.000</div>
+                </div>
               </div>
-              <div className="d-flex justify-content-between">
-                <div>Child 0x</div>
-                <div>IDR 375.000</div>
-              </div>
-              <div className="d-flex justify-content-between">
-                <div>Infant 0x</div>
-                <div>IDR 0</div>
-              </div>
-              <div className="d-flex justify-content-between fw-bolder mb-3">
-                <div>Subtotal</div>
-                <div>IDR 750.000</div>
-              </div>
-              <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
-                <div>Pay Amount</div>
-                <div>IDR 750.000</div>
-              </div>
-              </div>
-              <div className="border-end">
-
-              </div>
+              <div className="border-end"></div>
               <div className="col-lg-6 p-2">
-              <h4
-                className="fw-bolder"
-                style={{ fontSize: "16px", fontFamily: "Poppins" }}
-              >
-                Return Trip
-              </h4>
-              <div className="d-flex justify-content-between">
-                <div>Adult 2x</div>
-                <div>IDR 375.000</div>
+                <h4
+                  className="fw-bolder"
+                  style={{ fontSize: "16px", fontFamily: "Poppins" }}
+                >
+                  Return Trip
+                </h4>
+                <div className="d-flex justify-content-between">
+                  <div>Adult 2x</div>
+                  <div>IDR 375.000</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div>Child 0x</div>
+                  <div>IDR 375.000</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div>Infant 0x</div>
+                  <div>IDR 0</div>
+                </div>
+                <div className="d-flex justify-content-between fw-bolder mb-3">
+                  <div>Subtotal</div>
+                  <div>IDR 750.000</div>
+                </div>
+                <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
+                  <div>Pay Amount</div>
+                  <div>IDR 750.000</div>
+                </div>
               </div>
-              <div className="d-flex justify-content-between">
-                <div>Child 0x</div>
-                <div>IDR 375.000</div>
-              </div>
-              <div className="d-flex justify-content-between">
-                <div>Infant 0x</div>
-                <div>IDR 0</div>
-              </div>
-              <div className="d-flex justify-content-between fw-bolder mb-3">
-                <div>Subtotal</div>
-                <div>IDR 750.000</div>
-              </div>
-              <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
-                <div>Pay Amount</div>
-                <div>IDR 750.000</div>
-              </div>
-              </div>
-              
             </div>
             {/* <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
                 <div>Pay Amount</div>
@@ -410,9 +430,9 @@ const PaymentPage = () => {
           </div>
         </div>
       </div>
-
-      <div>
-        <div className="card p-4">
+      {/* Payment */}
+      <div className="col-lg-4">
+        <div className="card p-3">
           <div className="card-body">
             <div
               className="text-center fw-bolder mb-3"
@@ -428,610 +448,11 @@ const PaymentPage = () => {
               Finish this order before
             </div>
 
-            {/* Menampilkan tombol di modal jika ukuran layar kurang dari atau sama dengan 1000 */}
-            {isModal ? (
-              <>
-                {/* Button trigger modal */}
-                <div className="d-flex justify-content-center">
-                  <button
-                    type="button"
-                    className=" btn btn-white border border-dark mb-3 "
-                    data-bs-toggle="modal"
-                    data-bs-target="#paymentModal"
-                  >
-                    Payment Method:{" "}
-                    {selectedPayment ? selectedPayment : "Select"}
-                  </button>
-                </div>
+            <div>
+              {isDesktop ? <DekstopPaymentComponent /> : <PaymentComponent />}
+            </div>
 
-                {/* Modal */}
-                <div
-                  className="modal fade"
-                  id="paymentModal"
-                  tabIndex="-1"
-                  aria-labelledby="paymentModalLabel"
-                  aria-hidden="true"
-                >
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="paymentModalLabel">
-                          Pilih Metode Pembayaran
-                        </h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Paypal")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Paypal
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/paypal-logo-svgrepo-com.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() =>
-                                  handlePaymentSelect("Credit Card")
-                                }
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Credit Card
-                              </label>
-                            </div>
-                            {/* <img
-                            src="/image/payment/paypal-logo-svgrepo-com.svg"
-                            alt="PayPal Logo"
-                            className="ms-auto"
-                            style={{ width: "50px", height: "50px" }}
-                          /> */}
-                            <div className="d-flex ">
-                              <img
-                                src="/image/payment/jcb-card-icon.svg"
-                                alt="PayPal Logo"
-                                className="ms-0 p-1"
-                                style={{ width: "50px", height: "50px" }}
-                              />
-                              <img
-                                src="/image/payment/american-express-svgrepo-com.svg"
-                                alt="PayPal Logo"
-                                className="ms-0 p-1"
-                                style={{ width: "50px", height: "50px" }}
-                              />
-                              <img
-                                src="/image/payment/visa-logo-svgrepo-com.svg"
-                                alt="PayPal Logo"
-                                className="m-0 p-1"
-                                style={{ width: "50px", height: "50px" }}
-                              />
-                              <img
-                                src="/image/payment/mastercard-2-logo-svgrepo-com.svg"
-                                alt="PayPal Logo"
-                                className="m-0 p-1"
-                                style={{ width: "50px", height: "50px" }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Bank BCA")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank BCA
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/bca-bank-central-asia-logo-svgrepo-com.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() =>
-                                  handlePaymentSelect("Bank Mandiri")
-                                }
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank Mandiri
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/Bank-Mandiri-01.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Bank BRI")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank BRI
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/bri-logo.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Bank BNI")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank BNI
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/bank-negara-indonesia.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() =>
-                                  handlePaymentSelect("Bank Permata")
-                                }
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank Permata
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/2425815_bank_indonesia_permata_permatabank_syariah_icon.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Bank BJB")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank BJB
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/2425811_bank_banten_bjb_indonesian_jabar_icon.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                        {/* Metode Pembayaran */}
-                        <div className="mb-3">
-                          <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                            <div className="d-flex align-items-center">
-                              <input
-                                className="form-check-input me-2"
-                                type="radio"
-                                id="paymentModal1"
-                                name="paymentMethodModal"
-                                onClick={() => handlePaymentSelect("Bank BSI")}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="paymentModal1"
-                              >
-                                Bank BSI
-                              </label>
-                            </div>
-                            <img
-                              src="/image/payment/bank-syariah-indonesia-seeklogo.svg"
-                              alt="PayPal Logo"
-                              className="ms-auto"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                        Close
-                      </button>
-                    </div> */}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              // Menampilkan opsi pembayaran langsung jika ukuran layar lebih dari 1000
-              <div>
-                <div className="d-flex justify-content-between text-center gap-3">
-                  {/* Metode Pembayaran 1 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment1"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Paypal")}
-                        />
-                        <label className="form-check-label" htmlFor="payment1">
-                          Paypal
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/paypal-logo-svgrepo-com.svg"
-                        alt="Bank Mandiri Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 2 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment2"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Credit Card")}
-                        />
-                        <label className="form-check-label" htmlFor="payment2">
-                          Credit Card
-                        </label>
-                      </div>
-                      <div className="d-flex ">
-                        <img
-                          src="/image/payment/jcb-card-icon.svg"
-                          alt="PayPal Logo"
-                          className="ms-0 p-1"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                        <img
-                          src="/image/payment/american-express-svgrepo-com.svg"
-                          alt="PayPal Logo"
-                          className="ms-0 p-1"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                        <img
-                          src="/image/payment/visa-logo-svgrepo-com.svg"
-                          alt="PayPal Logo"
-                          className="m-0 p-1"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                        <img
-                          src="/image/payment/mastercard-2-logo-svgrepo-com.svg"
-                          alt="PayPal Logo"
-                          className="m-0 p-1"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 3 */}
-                  <div
-                    className="mb-3"
-                    style={{ backgroundColor: "white", flex: 1 }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment3"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank BCA")}
-                        />
-                        <label className="form-check-label" htmlFor="payment3">
-                          Bank BCA
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/bca-bank-central-asia-logo-svgrepo-com.svg"
-                        alt="Bank BCA Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between text-center gap-3">
-                  {/* Metode Pembayaran 1 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment1"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank Mandiri")}
-                        />
-                        <label className="form-check-label" htmlFor="payment1">
-                          Bank Mandiri
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/Bank-Mandiri-01.svg"
-                        alt="Bank Mandiri Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 2 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment2"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank BRI")}
-                        />
-                        <label className="form-check-label" htmlFor="payment2">
-                          Bank BRI
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/bri-logo.svg"
-                        alt="Bank BRI Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 3 */}
-                  <div
-                    className="mb-3"
-                    style={{ backgroundColor: "white", flex: 1 }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment3"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank BNI")}
-                        />
-                        <label className="form-check-label" htmlFor="payment3">
-                          Bank BNI
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/bank-negara-indonesia.svg"
-                        alt="Bank BNI Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between text-center gap-3">
-                  {/* Metode Pembayaran 1 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment1"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank Permata")}
-                        />
-                        <label className="form-check-label" htmlFor="payment1">
-                          Bank Permata
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/2425815_bank_indonesia_permata_permatabank_syariah_icon.svg"
-                        alt="Bank Permata Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 2 */}
-                  <div
-                    className="mb-3"
-                    style={{
-                      backgroundColor: "white",
-                      flex: 1,
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment2"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank BJB")}
-                        />
-                        <label className="form-check-label" htmlFor="payment2">
-                          Bank BJB
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/2425811_bank_banten_bjb_indonesian_jabar_icon.svg"
-                        alt="Bank BJB Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                  {/* Metode Pembayaran 3 */}
-                  <div
-                    className="mb-3"
-                    style={{ backgroundColor: "white", flex: 1 }}
-                  >
-                    <div className="d-flex align-items-center justify-content-between border border-secondary rounded px-2">
-                      <div className="d-flex align-items-center">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          id="payment3"
-                          name="paymentMethod"
-                          onClick={() => handlePaymentSelect("Bank BSI")}
-                        />
-                        <label className="form-check-label" htmlFor="payment3">
-                          Bank BSI
-                        </label>
-                      </div>
-                      <img
-                        src="/image/payment/bank-syariah-indonesia-seeklogo.svg"
-                        alt="Bank BSI Logo"
-                        className="ms-auto"
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
+            {/* Button checkout */}
             <div className="d-flex justify-content-center mt-4 border-top">
               <button
                 className="btn btn-primary mt-3 fw-bolder px-3"

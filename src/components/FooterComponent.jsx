@@ -105,42 +105,78 @@ const FooterComponent = () => {
             </div>
             <div className="col-lg-2 col-md-6 mb-4 mt-3">
               <h5 className="mb-3">Payment Method</h5>
-              <div className="payment-methods">
+              <div className="payment-methods" >
                 <img
-                  src="image/payment/atm_bersama_logo.png"
-                  alt="ATM Bersama"
+                  src="image/payment/paypal-logo-svgrepo-com.svg"
+                  alt="Paypal"
                   className="payment-logo"
+                  style={{width:"40px"}}
                 />
                 <img
-                  src="image/payment/prima_logo.png"
-                  alt="Prima"
+                  src="image/payment/american-express-svgrepo-com.svg"
+                  alt="American"
                   className="payment-logo"
+                  style={{width:"40px"}}
                 />
                 <img
-                  src="image/payment/bca.png"
+                  src="image/payment/visa-logo-svgrepo-com.svg"
+                  alt="Visa"
+                  className="payment-logo"
+                  style={{width:"40px"}}
+                />
+                <img
+                  src="image/payment/mastercard-4-logo-svgrepo-com.svg"
+                  alt="Mastercard"
+                  className="payment-logo"
+                  style={{width:"40px"}}
+                />
+                <img
+                  src="image/payment/jcb-card-icon.svg"
+                  alt="JCB"
+                  className="payment-logo"
+                  style={{width:"40px"}}
+                />
+                <img
+                  src="image/payment/bca-bank-central-asia-logo-svgrepo-com.svg"
                   alt="BCA"
                   className="payment-logo"
                 />
                 <img
-                  src="image/payment/bni_logo.png"
+                  src="image/payment/bank-negara-indonesia.svg"
                   alt="BNI"
                   className="payment-logo"
+                  style={{width:"40px"}}
+                />
+                {/* <img
+                  src="image/payment/bank-syariah-indonesia-seeklogo.svg"
+                  alt="BSI"
+                  className="payment-logo"
+                  style={{width:"40px"}}
+                /> */}
+                <img
+                  src="image/payment/bri-logo.svg"
+                  alt="BRI"
+                  className="payment-logo"
+                  style={{width:"40px"}}
                 />
                 <img
-                  src="image/payment/permata_bank_logo.png"
-                  alt="Permata Bank"
+                  src="image/payment/Bank-Mandiri-01.svg"
+                  alt="MAndiri"
                   className="payment-logo"
+                  style={{width:"40px"}}
+                />
+                {/* <img
+                  src="image/payment/2425815_bank_indonesia_permata_permatabank_syariah_icon.svg"
+                  alt="Permata"
+                  className="payment-logo"
+                  style={{width:"40px"}}
                 />
                 <img
-                  src="image/payment/bank_mandiri.png"
-                  alt="Mandiri"
+                  src="image/payment/2425811_bank_banten_bjb_indonesian_jabar_icon.svg"
+                  alt="BJB"
                   className="payment-logo"
-                />
-                <img
-                  src="image/payment/paypal.png"
-                  alt="PayPal"
-                  className="payment-logo"
-                />
+                  style={{width:"40px"}}
+                /> */}
               </div>
             </div>
           </div>

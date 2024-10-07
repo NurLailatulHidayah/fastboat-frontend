@@ -29,6 +29,7 @@ const DepartingArrivingPage = () => {
       <section className="departing-page">
         <div className="row clearfix col-lg-12 col-md-12 ">
           <div className="departing-page_menu col-lg-3">
+          <h3 className="mb-2 mt-3">Navigation</h3>
             <h4
               className={activeMenu === "From Bali" ? "active-menu" : ""}
               onClick={() => handleMenuClick("From Bali")}
@@ -60,10 +61,10 @@ const DepartingArrivingPage = () => {
           <div
             className={`departing-page_text ${
               activeMenu === "From Bali" ? "active" : ""
-            } col-lg-9 border-start mb-4`}
+            } col-lg-9 border-start mb-4 `}
           >
-            <h4 className="mb-3">Departing From Bali</h4>
-            <p className="lh-lg">
+            <h4 className=" p-2">Departing From Bali</h4>
+            <p className="lh-lg p-2">
               If your ticket includes pickup service at your hotel in Bali,
               please wait for the driver at the hotel lobby. This shuttle
               service is sharing basis. The driver may leave you behind if he
@@ -79,8 +80,8 @@ const DepartingArrivingPage = () => {
               transfer. Luggage will be loaded at the boat before passengers. If
               you have any luggage, please register it to the porters.
             </p>
-            <h4 className="mb-3">Arriving From Bali</h4>
-            <p className="lh-lg">
+            <h4 className="p-2">Arriving From Bali</h4>
+            <p className="lh-lg p-2">
               Wait until the fast boat fully docked at the harbor. Leave the
               fast boat carefully. Grab the hand grip firmly and watch your
               steps. If you have any luggage, please wait until the porter
@@ -99,8 +100,8 @@ const DepartingArrivingPage = () => {
               activeMenu === "From Gili Island" ? "active" : ""
             } col-lg-9 border-start mb-4`}
           >
-            <h4 className="mb-3">Departing From Gili Island</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Departing From Gili Island</h4>
+            <p className="lh-base p-2">
               No pickup service in Gili Island. The harbor can be reached by
               walk from most hotels, or you can use Cidomo (horse cart) to reach
               the harbor. Please be on the harbor 30 - 45 minutes prior to
@@ -115,8 +116,8 @@ const DepartingArrivingPage = () => {
               passengers. If you have any luggage, please register it to the
               porters.
             </p>
-            <h4 className="mb-3">Arriving From Gili Island</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Arriving From Gili Island</h4>
+            <p className="lh-base p-2">
               Wait until the fast boat fully docked at the harbor. Leave the
               fast boat carefully. Grab the hand grip firmly and watch your
               steps. If you have any luggage, please wait until the porter
@@ -134,8 +135,8 @@ const DepartingArrivingPage = () => {
               activeMenu === "From Lombok" ? "active" : ""
             } col-lg-9 border-start mb-4`}
           >
-            <h4 className="mb-3">Departing From Lombok</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Departing From Lombok</h4>
+            <p className="lh-base p-2">
               There is no pickup service in Lombok. Please be on the harbor
               about 30 - 45 minutes prior to depart time. Do check in at the
               counter. The officer will replace your electronic itinerary
@@ -148,8 +149,8 @@ const DepartingArrivingPage = () => {
               loaded at the boat before passengers. If you have any luggage,
               please register it to the porters.
             </p>
-            <h4 className="mb-3">Arriving From Lombok</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Arriving From Lombok</h4>
+            <p className="lh-base p-2">
               Wait until the fast boat fully docked at the harbor. Leave the
               fast boat carefully. Grab the hand grip firmly and watch your
               steps. If you have any luggage, please wait until the porter
@@ -167,8 +168,8 @@ const DepartingArrivingPage = () => {
               activeMenu === "From Nusa Lembongan" ? "active" : ""
             } col-lg-9 border-start mb-4`}
           >
-            <h4 className="mb-3">Departing From Nusa Lembongan</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Departing From Nusa Lembongan</h4>
+            <p className="lh-base p-2">
               If your transfer includes pickup at your hotel in Nusa Lembongan,
               please wait for fast boat's officer at hotel lobby. If you do not
               see the officer until the time specified, please contact us
@@ -186,8 +187,8 @@ const DepartingArrivingPage = () => {
               Bali. Luggage will be loaded at the boat before passengers. If you
               have any luggage, please register it to the porters.
             </p>
-            <h4 className="mb-3">Arriving From Nusa Lembongan</h4>
-            <p className="lh-base">
+            <h4 className="p-2">Arriving From Nusa Lembongan</h4>
+            <p className="lh-base p-2">
               Wait until the fast boat fully docked at the harbor. Leave the
               fast boat carefully. Grab the hand grip firmly and watch your
               steps. If you have any luggage, please wait until the porter
