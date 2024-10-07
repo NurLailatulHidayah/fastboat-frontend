@@ -4,6 +4,8 @@ import BenefitComponent from "../components/BenefitComponent";
 import FormFastboatComponent from "../components/FormFastboatComponent";
 import GaleryFasboatComponent from "../components/GaleryFasboatComponent";
 import ScrollTopButtonComponent from "../components/ScrollTopButtonComponent";
+import GaleryTourComponent from "../components/GaleryTourComponent";
+import GaleryIslandComponent from "../components/GaleryIslandComponent";
 
 const HomePage = () => {
   return (
@@ -91,10 +93,50 @@ const HomePage = () => {
           {/* Sec Title Two */}
           <div className="sec-title_two">
             <div className="bid-title">DESTINATION</div>
-            <div className="title">Fast Boat Routes</div>
-            {/* <div className="s-title">
+            <div className="title mb-3">Fast Boat Routes</div>
+            <div className="mt-5 opacity-75" style={{ fontSize: "20px" }}>
               Bali, Gili Island, Nusa Penida, Nusa Lembongan and Lombok
-            </div> */}
+            </div>
+            <div
+              className="container text-center mt-5 opacity-75"
+              style={{ fontSize: "16px", textDecoration: "line" }}
+            >
+              <div className="row">
+                <div className="col">
+                  <div>
+                    <a className="mb-2 pe-auto text-black hover-primary">
+                      Bali to Gili Meno
+                    </a>
+                  </div>
+                  <div>
+                    <a className="mb-2 ">Bali to Gili Air</a>
+                  </div>
+                  <div>
+                    <a className="mb-2">Bali to Gili Trawangan</a>
+                  </div>
+                  <div>
+                    <a className="mb-2">Bali to Lombok</a>
+                  </div>
+                  <div>
+                    <a>Bali to Nusa Lembongan</a>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="mb-2">Bali to Nusa Penida</div>
+                  <div className="mb-2">Nusa Penida to Lombok</div>
+                  <div className="mb-2">Nusa Lembongan to Lombok</div>
+                  <div className="mb-2">Nusa Penida to Gili Air</div>
+                  <div>Nusa Penida to Gili Trawangan</div>
+                </div>
+                <div className="col">
+                  <div className="mb-2">Nusa Lembongan to Gili Air</div>
+                  <div className="mb-2">Lembongan to Gili Trawangan</div>
+                  <div className="mb-2">Bali to Gili Gede</div>
+                  <div className="mb-2">Nusa penida to Gili Gede</div>
+                  <div>Amed to Gili Island and Lombok</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -114,64 +156,11 @@ const HomePage = () => {
           </div>
           {/* MixitUp Galery */}
           <div className="mixitup-gallery">
-            {/* Filter */}
-            <div className="projects-one_filters">
-              <ul className="filter-tabs">
-                {/* <li
-                  className="active filter"
-                  data-role="button"
-                  data-filter="all"
-                >
-                  all
-                </li>
-                <li className="filter" data-role="button" data-filter=".seller">
-                  Best Seller
-                </li> */}
-                {/* <li className="filter" data-role="button" data-filter=".nature">
-                  Nature
-                </li>
-                <li className="filter" data-role="button" data-filter=".city">
-                  City
-                </li>
-                <li
-                  className="filter"
-                  data-role="button"
-                  data-filter=".seasonal"
-                >
-                  Seasonal
-                </li> */}
-              </ul>
-            </div>
-            <div className="filter-list row">
-              {/* Location Block One */}
-              <div className="location-block_one  all city nature col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className=" object-fit-cover">
-                    <a href="#">
-                      <img
-                        src="/image/tour_activies/ramayana-ballet-performance-only.jpg"
-                        alt="ballet"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">
-                        Ramayana Ballet Purawisata - PERFORMANCE ONLY
-                      </a>
-                    </h5>
-                    {/* <div className="location-block_one">
-                      Karunia Jaya Fast Boat with early departure from Padangbai
-                      and Bangsal. Get the best ticket price with
-                      Gilitransfers.com
-                    </div>
-                    <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    /> */}
-                  </div>
-                </div>
-              </div>
+            <div className="filter-list ">
+              {/* Galery Tour */}
+              <GaleryTourComponent />
+              {/* End Galery Tour */}
+
               {/* Location Block One */}
               {/* <div className="location-block_one  all nature city col-lg-3 col-md-6 col-sm-6">
                 <div className="location-block_one-inner">
@@ -193,60 +182,6 @@ const HomePage = () => {
                       Complete your adventure with Wanderlust Cruise from Bali
                       to Gili Island and Penida to Gili with a direct boat. Get
                       the best tickets price with Gilitransfers
-                    </div>
-                    <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    />
-                  </div>
-                </div>
-              </div> */}
-              {/* Location Block One */}
-              {/* <div className="location-block_one  all seasonal seller col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/tour_activies/ramayana-ballet-performance.jpg"
-                        alt="smiling express"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">Ramayana Ballet Performance with Dinner</a>
-                    </h5>
-                    <div className="location-block_one">
-                      Embark on a journey that seamlessly connects Bali, Gili
-                      Island, and Lombok with Smiling Express Fast Boat. Get the
-                      best price with Gilitransfers
-                    </div>
-                    <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    />
-                  </div>
-                </div>
-              </div> */}
-              {/* Location Block One */}
-              {/* <div className="location-block_one  all seasonal seller col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/tour_activies/splash-waterpark-bali.jpg"
-                        alt="wanderlust cruise"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">FINNS Splash Day Pass - Water Park</a>
-                    </h5>
-                    <div className="location-block_one">
-                      Aman Dia Cruise is a new Marine Tourism Company based in
-                      Denpasar will take you from Bali to Nusa Penida on a
-                      comfortable luxury trip
                     </div>
                     <a
                       className="location-block_one-arrow flaticon-next-2"
@@ -280,115 +215,10 @@ const HomePage = () => {
           </div>
           {/* MixitUp Galery */}
           <div className="mixitup-gallery">
-            <div className="filter-list row">
-              {/* Location Block One */}
-              <div className="location-block_one  all city nature col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/island/nusa-penida.jpg"
-                        alt="nusa penida"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">Nusa Penida</a>
-                    </h5>
-                    {/* <div className="location-block_one">
-                      Karunia Jaya Fast Boat with early departure from Padangbai
-                      and Bangsal. Get the best ticket price with
-                      Gilitransfers.com
-                    </div> */}
-                    {/* <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    /> */}
-                  </div>
-                </div>
-              </div>
-              {/* Location Block One */}
-              <div className="location-block_one  all nature city col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/island/island-nusa-lembongan.jpg"
-                        alt="nusa lembongan"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">Nusa Lembongan</a>
-                    </h5>
-                    {/* <div className="location-block_one ">
-                      Complete your adventure with Wanderlust Cruise from Bali
-                      to Gili Island and Penida to Gili with a direct boat. Get
-                      the best tickets price with Gilitransfers
-                    </div> */}
-                    {/* <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    /> */}
-                  </div>
-                </div>
-              </div>
-              {/* Location Block One */}
-              <div className="location-block_one  all seasonal seller col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/island/lombok-island.jpg"
-                        alt="lombok "
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">Lombok </a>
-                    </h5>
-                    {/* <div className="location-block_one">
-                      Embark on a journey that seamlessly connects Bali, Gili
-                      Island, and Lombok with Smiling Express Fast Boat. Get the
-                      best price with Gilitransfers
-                    </div> */}
-                    {/* <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    /> */}
-                  </div>
-                </div>
-              </div>
-              {/* Location Block One */}
-              <div className="location-block_one  all seasonal seller col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/island/gili-trawangan.jpg"
-                        alt="gili trawangan"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">Gili Trawangan</a>
-                    </h5>
-                    {/* <div className="location-block_one">
-                      Aman Dia Cruise is a new Marine Tourism Company based in
-                      Denpasar will take you from Bali to Nusa Penida on a
-                      comfortable luxury trip
-                    </div> */}
-                    {/* <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    /> */}
-                  </div>
-                </div>
-              </div>
+            <div className="filter-list mt-4 mb-3">
+              {/* Galery Island */}
+              <GaleryIslandComponent />
+              {/* End Galery Island */}
             </div>
             {/* Button Box */}
             <div className="button-box text-center">

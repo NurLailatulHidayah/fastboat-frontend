@@ -85,9 +85,9 @@ const BlogsPage = () => {
                       {/* Post Widget */}
                       <div className="sidebar-widget post-widget mt-3 col-lg-12">
                         {/* <div className="widget-content"> */}
-                        
+
                         {/* Post Widget Block */}
-                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                        {/* <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
                           <div className="row clearfix mb-3">
                             <div className="post-widget_block-image col-lg-5 mt-3">
                               <a href="/blogs-details">
@@ -104,12 +104,12 @@ const BlogsPage = () => {
                                   The Serene Adventure: From Ubud to Gili
                                   Trawangan!
                                 </a>
-                                {/* <p>
+                                <p>
                                 The journey from Ubud to Gili Trawangan, from
                                 the cultural heartland of Bali to the tranquil
                                 oasis of the Gili Islands. One stop service with
                                 Gilitransfers
-                              </p> */}
+                              </p>
                               </h5>
 
                               <div className="post-widget_date">
@@ -137,12 +137,12 @@ const BlogsPage = () => {
                                   The Serene Adventure: From Ubud to Gili
                                   Trawangan!
                                 </a>
-                                {/* <p>
+                                <p>
                                 The journey from Ubud to Gili Trawangan, from
                                 the cultural heartland of Bali to the tranquil
                                 oasis of the Gili Islands. One stop service with
                                 Gilitransfers
-                              </p> */}
+                              </p>
                               </h5>
 
                               <div className="post-widget_date">
@@ -151,7 +151,7 @@ const BlogsPage = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                         <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
                           <div className="row clearfix mb-3">
                             <div className="post-widget_block-image col-lg-5 mt-3">
@@ -167,19 +167,19 @@ const BlogsPage = () => {
                               <div className="title">routes fastboat</div>
                               <h5 className="post-widget_heading">
                                 <a href="blog-details.html">
-                                  The Serene Adventure: From Ubud to Gili
-                                  Trawangan!
+                                  Fast Boat Bali to Gili Islands
                                 </a>
-                                {/* <p>
-                                The journey from Ubud to Gili Trawangan, from
-                                the cultural heartland of Bali to the tranquil
-                                oasis of the Gili Islands. One stop service with
-                                Gilitransfers
-                              </p> */}
+                                <p>
+                                  Fast Boat from Bali to Gili Islands with a
+                                  daily fast boat schedule. Provide a private
+                                  car and shuttle bus to reach the harbor in
+                                  Bali. Best service, fast confirmation, easy
+                                  payment
+                                </p>
                               </h5>
 
                               <div className="post-widget_date">
-                                April 3, 2025
+                                April 10, 2023
                                 <span>By.Rinda</span>
                               </div>
                             </div>
@@ -200,19 +200,18 @@ const BlogsPage = () => {
                               <div className="title">destination</div>
                               <h5 className="post-widget_heading">
                                 <a href="blog-details.html">
-                                  The Serene Adventure: From Ubud to Gili
-                                  Trawangan!
+                                  Bali to Gili, Here's What You Need To Know
                                 </a>
-                                {/* <p>
-                                The journey from Ubud to Gili Trawangan, from
-                                the cultural heartland of Bali to the tranquil
-                                oasis of the Gili Islands. One stop service with
-                                Gilitransfers
-                              </p> */}
+                                <p>
+                                  Another destination around Bali that attracts
+                                  tourists is the Gili Islands. Interested in
+                                  the Gili Islands? Take a look at the following
+                                  articles
+                                </p>
                               </h5>
 
                               <div className="post-widget_date">
-                                April 3, 2025
+                                March 2, 2023
                                 <span>By.Rinda</span>
                               </div>
                             </div>
@@ -233,26 +232,244 @@ const BlogsPage = () => {
                               <div className="title">destination</div>
                               <h5 className="post-widget_heading">
                                 <a href="blog-details.html">
-                                  The Serene Adventure: From Ubud to Gili
-                                  Trawangan!
+                                  Bali Travel Destinations
                                 </a>
-                                {/* <p>
-                                The journey from Ubud to Gili Trawangan, from
-                                the cultural heartland of Bali to the tranquil
-                                oasis of the Gili Islands. One stop service with
-                                Gilitransfers
-                              </p> */}
+                                <p>
+                                  Do you want to spend your vacation in Bali but
+                                  don't have much money? No worries. You can
+                                  have a comfortable and enjoyable vacation.
+                                  Here are some things to consider when
+                                  vacationing in Bali.
+                                </p>
                               </h5>
 
                               <div className="post-widget_date">
-                                April 3, 2025
+                                March 2, 2023
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-bali-to-gili-meno-a791dc10ef.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">
+                                  Bali to Gili Meno
+                                </a>
+                                <p>
+                                  Fast Boat from Bali to Gili Meno with direct
+                                  and indirect route and daily schedule from all
+                                  harbor in Bali. Find the suitable and cheapest
+                                  fast boat price with gilitransfers.com
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2023
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-bali-to-gili-air-6553533ab0.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">Bali to Gili Air</a>
+                                <p>
+                                  Bali to Gili Air with ease of transport. Find
+                                  the suitable boats with the best price only on
+                                  Gilitransfers.com
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-bali-to-gili-trawangan-ccfa1f1b17.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">
+                                  Bali to Gili Trawangan
+                                </a>
+                                <p>
+                                  Transfer from Bali to Gili Trawangan with a
+                                  daily fast boat schedule or use private
+                                  transfer from Lombok airport to Gili Trawangan
+                                  with gilitransfers.com
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-bali-to-lombok-f2f7caf0e0.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">Bali to Lombok</a>
+                                <p>
+                                  Various fast boats from Bali to Lombok are
+                                  ready to make your trip enjoyable and
+                                  unforgettable. Get the best price of Fast Boat
+                                  from Bali to Lombok with gilitransfers.com
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-fast-boat-bali-to-nusa-lembongan-f3b8ba7e19.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">
+                                  Fast Boat Bali to Nusa Lembongan
+                                </a>
+                                <p>
+                                  Take the fast boat transfer from Bali to Nusa
+                                  Lembongan with a daily schedule from Sanur and
+                                  Kusamba. Get the best price with
+                                  Gilitransfers.com
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-gili-inter-island-trip-fd73587e74.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">
+                                  Gili Inter Island Trip
+                                </a>
+                                <p>
+                                  Boat transfers from Lombok to Gili Trawangan,
+                                  Gili Air and Gili Meno and vice versa from
+                                  Bangsal Ports.
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
+                                <span>By.Rinda</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="post-widget_block pb-4 mb-4 border-bottom col-lg-8">
+                          <div className="row clearfix mb-3">
+                            <div className="post-widget_block-image col-lg-5 mt-3">
+                              <a href="#">
+                                <img
+                                  src="image/blogs/blog-bali-to-nusa-penida-2516add8e8.jpg"
+                                  alt=""
+                                  // className="img-fluid rounded"
+                                />
+                              </a>
+                            </div>
+                            <div className="content col-lg">
+                              <div className="title">Routes Fastboat</div>
+                              <h5 className="post-widget_heading">
+                                <a href="blog-details.html">
+                                  Bali to Nusa Penida
+                                </a>
+                                <p>
+                                  Bali to Nusa Penida by fast boat transfer from
+                                  Sanur, Kusamba and Padangbai only 30 minutes
+                                  transfer time. Get the best ticket prices with
+                                  Gilitransfers.
+                                </p>
+                              </h5>
+
+                              <div className="post-widget_date">
+                                Nov 30, 2022
                                 <span>By.Rinda</span>
                               </div>
                             </div>
                           </div>
                         </div>
                         {/* <div className="border-top"> */}
-                          <div className="page-pagination border rounded  col-lg-8">
+                        {/* <div className="page-pagination border rounded  col-lg-8">
                             <ul className="pagination mt-3 mb-3">
                               <li className="page-item">
                                 <a className="page-link" href="#">
@@ -275,7 +492,7 @@ const BlogsPage = () => {
                                 </a>
                               </li>
                             </ul>
-                          </div>
+                          </div> */}
                         {/* </div> */}
                       </div>
                     </aside>
