@@ -105,13 +105,20 @@ const PortPage = () => {
               filteredPorts.slice(0, displayLimit).map((port, index) => (
                 <div key={index} className="post-widget_block col-lg-3 ">
                   <div className="port-widget_block-image ">
-                    <a href="#">
+                    <Link to={`/ports/${port.prt_slug_en}`}>
+                    <img
+                        src={`http://localhost:8000/storage/${port.prt_image1}`}
+                        alt={port.prt_slug_en}
+                        className="port-image"
+                      />
+                    </Link>
+                    {/* <a href="#">
                       <img
                         src={`http://localhost:8000/storage/${port.prt_image1}`}
                         alt={port.prt_slug_en}
                         className="port-image"
                       />
-                    </a>
+                    </a> */}
                   </div>
                   <div className="content p-2">
                     <h5 className="post-widget_heading">
