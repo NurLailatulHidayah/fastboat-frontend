@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "leaflet/dist/leaflet.css"; 
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import FormFastboatComponent from "../components/FormFastboatComponent";
 import { Link, useParams } from "react-router-dom";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 const PortDetailPage = () => {
-  // Mendapatkan slug dari URL
   let { slug } = useParams();
   const [portDetail, setPortDetail] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false); // For lightbox
+  const [lightboxIndex, setLightboxIndex] = useState(0); // Current index for lightbox
 
   const fetchDataPortDetail = async () => {
     if (!slug) {
@@ -21,7 +28,6 @@ const PortDetailPage = () => {
     }
 
     try {
-      // Fetch data ports menggunakan slug dari URL
       const response = await api.get(`/api/port/en/${slug}`);
       setPortDetail(response.data || null);
     } catch (error) {
@@ -53,28 +59,34 @@ const PortDetailPage = () => {
     fetchDataPortDetail();
   }, [slug]);
 
+  // Generate image array for lightbox
+  const images = [
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image1}` },
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image2}` },
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image3}` },
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image4}` },
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image5}` },
+    { src: `http://localhost:8000/storage/${portDetail?.prt_image6}` },
+  ];
 
-  // Fungsi untuk menghasilkan URL Google Maps berdasarkan koordinat
-  const getGoogleMapsLink = (coordinates) => {
-    return `https://www.google.com/maps?q=${coordinates}`;
-  };
+  // Display only first 4 images
+  const displayedImages = images.slice(0, 4);
 
   return (
     <div>
       {/* Page Banner */}
       <section
         className="page-banner"
-        style={{ backgroundImage: "url(/image/ports/3.jpg)" }}
+        style={{ backgroundImage: "url(/image/background/adventure.jpg)" }}
       >
         <div className="auto-container">
-          {/* <h1 className="page-banner_title">Ports slug</h1> */}
           <div className="row clearfix">
-            <h4 className=" col-lg-11 text-center">
+            <h4 className="col-lg-11 text-center">
               Ports {portDetail ? portDetail.prt_name_en : " "}
             </h4>
             <ul className="page-breadbrumbs">
               <li>
-                <a href="/ports">Ports</a>
+                <Link to="/ports">Ports</Link>
               </li>
               <li>{portDetail ? portDetail.prt_name_en : " "}</li>
             </ul>
@@ -82,170 +94,108 @@ const PortDetailPage = () => {
           <FormFastboatComponent />
         </div>
       </section>
-      {/* End Page Banner */}
 
-      <section className="fastboat-detail_gallery" style={{ zIndex: -1 }}>
+      <section className="" style={{ zIndex: -1 }}>
         <div className="auto-container">
           {error ? (
             <div className="alert alert-danger mb-0">{error}</div>
           ) : loading ? (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-              <radialGradient
-                id="a11"
-                cx=".66"
-                fx=".66"
-                cy=".3125"
-                fy=".3125"
-                gradientTransform="scale(1.5)"
-              >
-                <stop offset={0} stopColor="#8CB2FF" />
-                <stop offset=".3" stopColor="#8CB2FF" stopOpacity=".9" />
-                <stop offset=".6" stopColor="#8CB2FF" stopOpacity=".6" />
-                <stop offset=".8" stopColor="#8CB2FF" stopOpacity=".3" />
-                <stop offset={1} stopColor="#8CB2FF" stopOpacity={0} />
-              </radialGradient>
-              <circle
-                transform-origin="center"
-                fill="none"
-                stroke="url(#a11)"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeDasharray="200 1000"
-                strokeDashoffset={0}
-                cx={100}
-                cy={100}
-                r={5}
-              >
-                <animateTransform
-                  type="rotate"
-                  attributeName="transform"
-                  calcMode="spline"
-                  dur="1.4"
-                  values="360;0"
-                  keyTimes="0;1"
-                  keySplines="0 0 1 1"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle
-                transform-origin="center"
-                fill="none"
-                opacity=".2"
-                stroke="#8CB2FF"
-                strokeWidth={2}
-                strokeLinecap="round"
-                cx={100}
-                cy={100}
-                r={5}
-              />
+              {/* Loading Spinner */}
             </svg>
           ) : (
             <>
-              {/* <div className="row clearfix border-bottom">
-                <h4 className="fastboat-detail_gallery col-lg-3">
-                  {fastboatDetail.fb_name}
-                </h4>
-              </div> */}
-
-              <div className="row clearfix mt-3 ">
-                <div className=" col-lg-3 col-md-3 col-sm-12">
-                  <div className="">
-                    <a
-                      className="image"
-                      href={`http://localhost:8000/storage/${portDetail.prt_image1}`}
-                    >
+              <div className="row clearfix mt-3">
+                {/* Display first 4 Image Thumbnails */}
+                {displayedImages.map((image, index) => (
+                  <div className="col-lg-3 col-md-3 col-sm-12 mb-3" key={index}>
+                    <div className="image">
                       <img
-                        src={`http://localhost:8000/storage/${portDetail.prt_image1}`}
-                        alt={portDetail.prt_name_en}
+                        src={image.src}
+                        alt={portDetail?.prt_name_en}
+                        onClick={() => {
+                          setLightboxIndex(index);
+                          setLightboxOpen(true);
+                        }}
+                        style={{ cursor: "pointer", width: "100%" }}
                       />
-                    </a>
-                  </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-12">
-                  <div className="image">
-                    <a
-                      className="lightbox-image"
-                      href={`http://localhost:8000/storage/${portDetail.prt_image2}`}
-                    >
-                      <img
-                        src={`http://localhost:8000/storage/${portDetail.prt_image2}`}
-                        alt={portDetail.prt_name_en}
-                      />
-                    </a>
-                  </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-12">
-                  <div className="image">
-                    <a
-                      className="lightbox-image"
-                      href={`http://localhost:8000/storage/${portDetail.prt_image3}`}
-                    >
-                      <img
-                        src={`http://localhost:8000/storage/${portDetail.prt_image3}`}
-                        alt={portDetail.prt_name_en}
-                      />
-                    </a>
-                  </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-12">
-                  <div className="image">
-                    <a
-                      className="lightbox-image"
-                      href={`http://localhost:8000/storage/${portDetail.prt_image4}`}
-                    >
-                      <img
-                        src={`http://localhost:8000/storage/${portDetail.prt_image4}`}
-                        alt={portDetail.prt_name_en}
-                      />
-                    </a>
-                    <div className="overlay-box">
-                      <div className="overlay-inner">
-                        <a
-                          className="lightbox-image"
-                          href="images/gallery/51.jpg"
-                        >
-                          See All Photos
-                        </a>
-                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
+
+                {/* Show more button if more than 4 images */}
+                {images.length > 4 && (
+                  <div className="col-lg-3 col-md-3 col-sm-12 mb-3">
+                    {/* <button
+                      className="btn btn-primary w-100 h-100"
+                      onClick={() => {
+                        setLightboxIndex(0); 
+                        setLightboxOpen(true);
+                      }}
+                    >
+                      View All Images
+                    </button> */}
+                  </div>
+                )}
               </div>
 
-              <div className="row clearfix">
-                <div className="col-lg-9 border-bottom border mt-4 mb-5 rounded">
-                  <h3 className="p-3">Description</h3>
-                  <p className="justify-text p-3">
-                    {portDetail.prt_description_en}
-                  </p>
+              {/* Lightbox */}
+              {lightboxOpen && (
+                <Lightbox
+                  open={lightboxOpen}
+                  close={() => setLightboxOpen(false)}
+                  slides={images} // Show all images in lightbox
+                  index={lightboxIndex}
+                  onIndexChange={setLightboxIndex}
+                  plugins={[Fullscreen, Thumbnails, Zoom]} // Enable plugins
+                />
+              )}
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Peta dan Detail */}
+      <section className="fastboat-detail_gallery">
+        <div className="auto-container">
+          {error ? (
+            <div className="alert alert-danger mb-0">{error}</div>
+          ) : (
+            <>
+              <div className="row clearfix ">
+                <div className="col-lg-9">
+                  <h3>Description</h3>
+                  <p>{portDetail?.prt_description_en}</p>
                 </div>
                 <div className="col-lg-3">
-                   {/* Menampilkan Peta */}
                   {portDetail && portDetail.prt_map && (
                     <>
                       <MapContainer
                         center={portDetail.prt_map.split(",").map(Number)}
                         zoom={13}
                         style={{ height: "300px", width: "100%" }}
+                        attributionControl={false}
                       >
                         <TileLayer
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          attribution=""
                         />
-                        <Marker position={portDetail.prt_map.split(",").map(Number)}>
+                        <Marker
+                          position={portDetail.prt_map.split(",").map(Number)}
+                        >
                           <Popup>{portDetail.prt_name_en}</Popup>
                         </Marker>
                       </MapContainer>
 
-                      {/* Tautan ke Google Maps */}
-                      <div className="mt-3">
+                      {/* Google Maps Link */}
+                      <div className="mt-3 mb-4 text-end">
                         <a
-                          href={getGoogleMapsLink(portDetail.prt_map)}
+                          href={`https://www.google.com/maps?q=${portDetail.prt_map}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-primary btn-block"
                         >
-                          Lihat di Google Maps
+                          Show
                         </a>
                       </div>
                     </>
