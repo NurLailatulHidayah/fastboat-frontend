@@ -37,8 +37,8 @@ const HowToBookPage = () => {
         <div className="row clearfix col-lg-12 col-md-12 ">
           {/* Menu Page */}
 
-          <div className="how-to-book-page_menu col-lg-3 ">
-            <div className="menu-items border rounded">
+          <div className="how-to-book-page_menu col-lg-3 p-4">
+            <div className="menu-items border rounded ">
               <h3 className="mb-2 mt-3">Navigation</h3>
               <h4
                 className={activeMenu === "Fast Boats" ? "active-menu" : ""}
@@ -93,7 +93,7 @@ const HowToBookPage = () => {
           <div
             className={`how-to-book-page_text ${
               activeMenu === "Fast Boats" ? "active" : ""
-            } col-lg-9 border-start mb-4`}
+            } col-lg-9 border-start mb-4 mt-3`}
           >
             <h4 className="mb-3">How To Book Fast Boats Tickets</h4>
             <ol className=" list-group-numbered">
