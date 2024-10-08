@@ -19,7 +19,7 @@ const BenefitComponent = () => {
               {/* Benefit Block One */}
               <div className="benefit-block_one col-lg-4 col-md-6 col-sm-12">
                 <div
-                  className="benefit-block_one-inner wow fadeInLeft"
+                  className="benefit-block_one-inner  "
                   data-wow-delay="0ms"
                   data-wow-duration="1500ms"
                 >
@@ -34,7 +34,7 @@ const BenefitComponent = () => {
               {/* Benefit Block One */}
               <div className="benefit-block_one col-lg-4 col-md-6 col-sm-12">
                 <div
-                  className="benefit-block_one-inner wow fadeInLeft"
+                  className="benefit-block_one-inner "
                   data-wow-delay="150ms"
                   data-wow-duration="1500ms"
                 >
@@ -50,9 +50,9 @@ const BenefitComponent = () => {
                 </div>
               </div>
               {/* Benefit Block One */}
-              <div className="benefit-block_one col-lg-4 col-md-6 col-sm-12">
+              <div className="benefit-block_one col-lg-4 col-md-6 col-sm-12 mt-5">
                 <div
-                  className="benefit-block_one-inner wow fadeInLeft"
+                  className="benefit-block_one-inner "
                   data-wow-delay="300ms"
                   data-wow-duration="1500ms"
                 >
