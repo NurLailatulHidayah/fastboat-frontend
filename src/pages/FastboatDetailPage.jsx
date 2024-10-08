@@ -213,7 +213,12 @@ const FastboatDetailPage = () => {
                   ))
                 ) : (
                   <tr className="schedule">
-                    <td>No schedule available</td>
+                    <td
+                      colSpan="3"
+                      className="text-center font-weight-bold text-muted"
+                    >
+                      No schedule available
+                    </td>
                   </tr>
                 )}
               </tbody>
