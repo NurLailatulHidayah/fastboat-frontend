@@ -81,8 +81,8 @@ const FastboatDetailPage = () => {
         style={{ backgroundImage: "url(/image/main-slider/1.jpg)" }}
       >
         <div className="auto-container">
-          <div className="row clearfix">
-            <h4 className=" col-lg">
+          <div className="">
+            <h4 className="text-center">
               Fastboat {fastboatDetail ? fastboatDetail.fb_name : " "}
             </h4>
           </div>
@@ -102,7 +102,7 @@ const FastboatDetailPage = () => {
             <>
               <div className="row clearfix mt-3">
                 {displayedImages.map((image, index) => (
-                  <div className="col-lg-3 col-md-3 col-sm-12" key={index}>
+                  <div className="col-lg-3 col-md-3 col-sm-12 mt-3" key={index}>
                     <div className="image">
                       <a
                         href="#"
@@ -149,14 +149,14 @@ const FastboatDetailPage = () => {
                 />
               )}
 
-              {/* <div className="col border-bottom">
+              <div className="col border-bottom">
                 <h3 style={{ fontFamily: "Poppins", font: "16px" }}>
                   Description
                 </h3>
                 <p className="mt-3 justify-text opacity-75">
                   {fastboatDetail.fb_description_en}
                 </p>
-              </div> */}
+              </div>
             </>
           )}
         </div>
@@ -164,12 +164,12 @@ const FastboatDetailPage = () => {
 
       <section className="fastboat-detail_gallery ">
         <div className="auto-container">
-          <div className="col border-bottom">
+          {/* <div className="col border-bottom">
             <h3 style={{ fontFamily: "Poppins", font: "16px" }}>Description</h3>
             <p className="mt-3 justify-text opacity-75">
               {fastboatDetail.fb_description_en}
             </p>
-          </div>
+          </div> */}
           <div className="col-lg-12 ">
             <h3>Schedule</h3>
             <table className="table table-hover mt-3 mb-5 text-center">

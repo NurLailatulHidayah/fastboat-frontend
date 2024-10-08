@@ -79,8 +79,8 @@ const HomePage = () => {
         <div className="button-box text-center mt-5">
           <a className="btn-style-three theme-btn" href="/fast-boat">
             <div className="btn-wrap">
-              <span className="text-one">Load More</span>
-              <span className="text-two">Load More</span>
+              <span className="text-one">See more fast boat</span>
+              <span className="text-two">See more fast boat</span>
             </div>
           </a>
         </div>
@@ -98,11 +98,11 @@ const HomePage = () => {
               Bali, Gili Island, Nusa Penida, Nusa Lembongan and Lombok
             </div>
             <div
-              className="container text-center mt-5 opacity-75"
+              className=" text-center mt-5 opacity-75"
               style={{ fontSize: "16px", textDecoration: "line" }}
             >
-              <div className="row">
-                <div className="col">
+              <div className="row clearfix">
+                <div className="col-4">
                   <div>
                     <a className="mb-2 pe-auto text-black hover-primary">
                       Bali to Gili Meno
@@ -121,14 +121,14 @@ const HomePage = () => {
                     <a>Bali to Nusa Lembongan</a>
                   </div>
                 </div>
-                <div className="col">
+                <div className="col-4">
                   <div className="mb-2">Bali to Nusa Penida</div>
                   <div className="mb-2">Nusa Penida to Lombok</div>
                   <div className="mb-2">Nusa Lembongan to Lombok</div>
                   <div className="mb-2">Nusa Penida to Gili Air</div>
                   <div>Nusa Penida to Gili Trawangan</div>
                 </div>
-                <div className="col">
+                <div className="col-4">
                   <div className="mb-2">Nusa Lembongan to Gili Air</div>
                   <div className="mb-2">Lembongan to Gili Trawangan</div>
                   <div className="mb-2">Bali to Gili Gede</div>
@@ -195,8 +195,8 @@ const HomePage = () => {
             <div className="button-box text-center">
               <a className="btn-style-three theme-btn" href="/fastboat">
                 <div className="btn-wrap">
-                  <span className="text-one">Load More Destinations</span>
-                  <span className="text-two">Load More Destinations</span>
+                  <span className="text-one">See more Tour and Activities</span>
+                  <span className="text-two">See more Tour and Activities</span>
                 </div>
               </a>
             </div>
@@ -224,8 +224,8 @@ const HomePage = () => {
             <div className="button-box text-center">
               <a className="btn-style-three theme-btn" href="/fastboat">
                 <div className="btn-wrap">
-                  <span className="text-one">Load More Destinations</span>
-                  <span className="text-two">Load More Destinations</span>
+                  <span className="text-one">See more island</span>
+                  <span className="text-two">See more island</span>
                 </div>
               </a>
             </div>
