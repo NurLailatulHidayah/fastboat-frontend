@@ -1,75 +1,92 @@
 const SupportComponent = () => {
   return (
-    <div>
-      {" "}
+    <div className="body-slider">
       {/* Progress One */}
-      <section
-        className="progress-one"
-        style={{ backgroundImage: 'url("/image/background/15.jpg")' }}
-      >
-        <div className="auto-container">
-          {/* Sec Title Two */}
-          <div className="sec-title_two light">
-            {/* <div className="bid-title">BENEFIT</div> */}
-            <div className="title">Why Book With Gilitransfers.com ?</div>
-          </div>
-          <div className="inner-container">
-            <div className="row clearfix">
-              {/* Process Block One */}
-              <div className="process-block_one col-lg-4 col-md-6 col-sm-12">
-                <div
-                  className="process-block_one-inner wow fadeInLeft"
-                  data-wow-delay="0ms"
-                  data-wow-duration="1500ms"
-                >
-                  <div className="process-block_one-icon flaticon-clock" />
-                  <h5 className="process-block_one-title">Saving Your Time</h5>
-                  <div className="process-block_one-text">
-                    Our booking engines are developed to make visitors easier to
-                    complete the reservations in minutes.
-                  </div>
-                </div>
-              </div>
-              {/* Process Block One */}
-              <div className="process-block_one col-lg-4 col-md-6 col-sm-12">
-                <div
-                  className="process-block_one-inner wow fadeInLeft"
-                  data-wow-delay="150ms"
-                  data-wow-duration="1500ms"
-                >
-                  <div className="process-block_one-icon flaticon-phone-call" />
-                  <h5 className="process-block_one-title">
-                    Real Time Customer Service
-                  </h5>
-                  <div className="process-block_one-text">
-                    Live chat is online in our site from 9 AM to 7 PM (Bali
-                    time, GMT+8). Phone , Whatsapp, and Email are available from
-                    6 am to 10 pm (Bali time, GMT+8).
-                  </div>
-                </div>
-              </div>
-              {/* Process Block One */}
-              <div className="process-block_one col-lg-4 col-md-6 col-sm-12">
-                <div
-                  className="process-block_one-inner wow fadeInLeft"
-                  data-wow-delay="300ms"
-                  data-wow-duration="1500ms"
-                >
-                  <div className="process-block_one-icon flaticon-money-bag" />
-                  <h5 className="process-block_one-title">Saving Your Money</h5>
-                  <div className="process-block_one-text">
-                    We provide multiple currencies for the payment. By
-                    purchasing the ticket/voucher in your own currency, you may
-                    cut the currency conversion rate and organize your travel
-                    budget at ease.
-                  </div>
-                </div>
-              </div>
+      <section className="main-slider">
+        <div className="text-center mb-3">
+        <h4 className="" style={{fontFamily:"Poppins"}}>Support By</h4>
+
+        </div>
+        <div className="slider">
+          <div className="list align-items-center">
+            {/* Set pertama */}
+            <div className="item">
+              <img src="image/clients/logo_arthamas_gilitransfers.png" alt="Arthamas" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_bluewater_express_gilitransfers.png" alt="Bluewater Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_caspla_seaview_gilitransfers.png" alt="Caspla Seaview" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_dcamel_ferry_gilitransfers.png" alt="Dcamel Ferry" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_dprabu_boat_gilitransfers.png" alt="Dprabu Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_gangga_express_gilitransfers.png" alt="Gangga Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_glory_express_gilitransfers.png" alt="Glory Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_idola_express_gilitransfers.png" alt="Idola Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_maruti_boat_gilitransfers.png" alt="Maruti Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_starfish_boat_gilitransfers.png" alt="Starfish Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo-Angel_Billabong.png" alt="Angel Billabong Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo-Eka_Jaya.jpg" alt="Eka Jaya Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo-Semaya_One_Fast_Cruise.png" alt="Semaya One Fast Cruise" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo-Wanderlust_Fast_Boat.png" alt="Wanderlust Boat" />
+            </div>
+
+            {/* Set kedua untuk infinite scroll */}
+            <div className="item">
+              <img src="image/clients/logo_arthamas_gilitransfers.png" alt="Arthamas" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_bluewater_express_gilitransfers.png" alt="Bluewater Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_caspla_seaview_gilitransfers.png" alt="Caspla Seaview" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_dcamel_ferry_gilitransfers.png" alt="Dcamel Ferry" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_dprabu_boat_gilitransfers.png" alt="Dprabu Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_gangga_express_gilitransfers.png" alt="Gangga Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_glory_express_gilitransfers.png" alt="Glory Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_idola_express_gilitransfers.png" alt="Idola Express" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_maruti_boat_gilitransfers.png" alt="Maruti Boat" />
+            </div>
+            <div className="item">
+              <img src="image/clients/logo_starfish_boat_gilitransfers.png" alt="Starfish Boat" />
             </div>
           </div>
         </div>
       </section>
-      {/* End Progress One */}
     </div>
   );
 };

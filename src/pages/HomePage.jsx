@@ -6,6 +6,7 @@ import GaleryFasboatComponent from "../components/GaleryFasboatComponent";
 import ScrollTopButtonComponent from "../components/ScrollTopButtonComponent";
 import GaleryTourComponent from "../components/GaleryTourComponent";
 import GaleryIslandComponent from "../components/GaleryIslandComponent";
+import SupportComponent from "../components/SupportComponent";
 
 const HomePage = () => {
   return (
@@ -237,6 +238,11 @@ const HomePage = () => {
       {/* Benefits One */}
       <BenefitComponent />
       {/* End Benefits One */}
+
+
+      {/* Support By */}
+      <SupportComponent />
+      {/* End Support By */}
     </div>
   );
 };
