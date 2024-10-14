@@ -3,34 +3,43 @@ import React from "react";
 const GaleryTourComponent = () => {
   return (
     <div className="row clearfix">
+      {/* Tour Block One */}
+      <div className="row row-cols-1 row-cols-md-4 g-3 mb-4">
+        <div className="col ">
+          <div className="card h-100 rounded-3">
+            <img src="/image/tour_activies/ramayana-ballet-performance-only.jpg" className="card-img-top rounded-top" alt="" />
+            <div className="card-body">
+              <p className="card-text">Ramayana Ballet Purawisata - PERFORMANCE ONLY</p>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div className="card h-100 rounded-3">
+            <img src="/image/tour_activies/ramayana-ballet-performance-only.jpg" className="card-img-top rounded-top" alt="" />
+            <div className="card-body">
+              <p className="card-text">Ramayana Ballet Purawisata - PERFORMANCE ONLY</p>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div className="card h-100 rounded-3">
+            <img src="/image/tour_activies/ramayana-ballet-performance-only.jpg" className="card-img-top rounded-top" alt="" />
+            <div className="card-body">
+              <p className="card-text">Ramayana Ballet Purawisata - PERFORMANCE ONLY</p>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div className="card h-100 rounded-3">
+            <img src="/image/tour_activies/ramayana-ballet-performance-only.jpg" className="card-img-top rounded-top" alt="" />
+            <div className="card-body">
+              <p className="card-text">Ramayana Ballet Purawisata - PERFORMANCE ONLY</p>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Location Block One */}
-      <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-5">
-        {/* <div className="location-block_one-inner">
-                  <div className=" object-fit-cover">
-                    <a href="#">
-                      <img
-                        src="/image/tour_activies/ramayana-ballet-performance-only.jpg"
-                        alt="ballet"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">
-                        Ramayana Ballet Purawisata - PERFORMANCE ONLY
-                      </a>
-                    </h5>
-                    <div className="location-block_one">
-                      Karunia Jaya Fast Boat with early departure from Padangbai
-                      and Bangsal. Get the best ticket price with
-                      Gilitransfers.com
-                    </div>
-                    <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    />
-                  </div>
-                </div> */}
+      {/* <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-5">
         <div className="card ">
           <a href="/blogs">
             <img
@@ -49,9 +58,9 @@ const GaleryTourComponent = () => {
             </div>
           </a>
         </div>
-      </div>
+      </div> */}
       {/* Location Block One */}
-      <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
+      {/* <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
         <div className="card ">
           <a href="/blogs">
             <img
@@ -70,9 +79,9 @@ const GaleryTourComponent = () => {
             </div>
           </a>
         </div>
-      </div>
+      </div> */}
       {/* Location Block One */}
-      <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
+      {/* <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
         <div className="card ">
           <a href="/blogs">
             <img
@@ -91,9 +100,9 @@ const GaleryTourComponent = () => {
             </div>
           </a>
         </div>
-      </div>
+      </div> */}
       {/* Location Block One */}
-      <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
+      {/* <div className="  col-lg-3 col-md-6 col-sm-6 mt-3 mb-">
         <div className="card ">
           <a href="/blogs">
             <img
@@ -112,7 +121,7 @@ const GaleryTourComponent = () => {
             </div>
           </a>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
