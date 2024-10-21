@@ -5,12 +5,15 @@ import Select from "react-select";
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import id from "air-datepicker/locale/id";
+import { useNavigate } from "react-router-dom";
 
 const FormFastboatComponent = () => {
   // Get data Port
   const [ports, setPorts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const navigate = useNavigate();
 
   const fetchDataPort = async () => {
     try {
@@ -18,21 +21,7 @@ const FormFastboatComponent = () => {
       setPorts(response.data.data || []);
     } catch (error) {
       console.error("Error fetching data: ", error);
-      if (error.response) {
-        if (error.response.status === 404) {
-          setError(
-            "Data tidak ditemukan. Coba periksa URL atau ID yang Anda gunakan."
-          );
-        } else if (error.response.status === 500) {
-          setError("Terjadi kesalahan pada server. Silakan coba lagi nanti.");
-        } else {
-          setError("Terjadi kesalahan saat memuat data. Coba lagi nanti.");
-        }
-      } else {
-        setError(
-          "Tidak dapat terhubung ke server. Coba periksa koneksi internet Anda."
-        );
-      }
+      setError("Terjadi kesalahan saat memuat data. Coba lagi nanti.");
     } finally {
       setLoading(false);
     }
@@ -48,15 +37,22 @@ const FormFastboatComponent = () => {
   }));
 
   // Mengelola tanggal
-  const formatDate = (date) => {
-    const options = { weekday: "short", month: "short", day: "numeric" };
-    return date.toLocaleDateString("en-US", options);
+  const formatDateToYMD = (date) => {
+    if (!date) return null;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
   };
 
-  const today = formatDate(new Date());
+  const today = formatDateToYMD(new Date());
 
   const [deptDate, setDeptDate] = useState(today);
   const [returnDate, setReturnDate] = useState(null);
+  const [departurePort, setDeparturePort] = useState(null);
+  const [arrivalPort, setArrivalPort] = useState(null);
 
   const handleClearReturnDate = () => {
     setReturnDate(null);
@@ -68,19 +64,23 @@ const FormFastboatComponent = () => {
   useEffect(() => {
     const deptDatePicker = new AirDatepicker(deptDateRef.current, {
       locale: id,
-      dateFormat: "dd-MM-yyyy",
+      dateFormat: "yyyy-MM-dd",
       minDate: new Date(),
       onSelect: ({ date }) => {
-        setDeptDate(formatDate(date));
+        if (date) {
+          setDeptDate(formatDateToYMD(date));
+        }
       },
     });
 
     const returnDatePicker = new AirDatepicker(returnDateRef.current, {
       locale: id,
-      dateFormat: "dd-MM-yyyy",
+      dateFormat: "yyyy-MM-dd",
       minDate: new Date(),
       onSelect: ({ date }) => {
-        setReturnDate(formatDate(date));
+        if (date) {
+          setReturnDate(formatDateToYMD(date));
+        }
       },
     });
 
@@ -101,44 +101,58 @@ const FormFastboatComponent = () => {
 
   const totalPassengers = adultCount + childCount + infantCount;
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validasi input
+    if (!departurePort || !arrivalPort || !deptDate) {
+      alert("Semua field wajib diisi kecuali Return Date.");
+      return;
+    }
+
+    // Determine the direction based on the returnDate
+    const direction = returnDate ? "round_trip" : "one_way";
+
+    // Construct the search URL with query parameters
+    const searchParams = new URLSearchParams({
+      direction,
+      port_name_departure: departurePort,
+      port_name_arrival: arrivalPort,
+      departure_date: deptDate,
+      return_date: returnDate || "", 
+      adult: adultCount,
+      child: childCount,
+      infant: infantCount,
+    }).toString();
+
+    // Redirect to the search page with parameters
+    navigate(`/fast-boat-search?${searchParams}`);
+  };
+
   return (
     <div>
       <div className="banner-one_form-box">
         <div className="travel-form form-fastboat">
-          <form className="row g-3 needs-validation" action="/fast-boat-search">
+          <form className="row g-3 needs-validation" onSubmit={handleSubmit}>
             <div className="col-md-2">
-              {loading ? (
-                <Select
-                  id="departurePort"
-                  options={portOptions}
-                  placeholder=" Departure Port"
-                />
-              ) : error ? (
-                <div className="alert alert-danger">{error}</div>
-              ) : (
-                <Select
-                  id="departurePort"
-                  options={portOptions}
-                  placeholder="Departure Port"
-                />
-              )}
+              <Select
+                id="departurePort"
+                options={portOptions}
+                placeholder="Departure Port"
+                onChange={(selected) => setDeparturePort(selected.value)}
+                isDisabled={loading}
+                required
+              />
             </div>
             <div className="col-md-2">
-              {loading ? (
-                <Select
-                  id="arrivalPort"
-                  options={portOptions}
-                  placeholder="Arrival Port"
-                />
-              ) : error ? (
-                <div className="alert alert-danger">{error}</div>
-              ) : (
-                <Select
-                  id="arrivalPort"
-                  options={portOptions}
-                  placeholder="Arrival Port"
-                />
-              )}
+              <Select
+                id="arrivalPort"
+                options={portOptions}
+                placeholder="Arrival Port"
+                onChange={(selected) => setArrivalPort(selected.value)}
+                isDisabled={loading}
+                required
+              />
             </div>
             <div className="col-md-4">
               <div className="row">
@@ -171,7 +185,6 @@ const FormFastboatComponent = () => {
                       ref={returnDateRef}
                       value={returnDate || "Return?"}
                       readOnly
-                      required
                     />
                     {returnDate && (
                       <button
@@ -189,16 +202,19 @@ const FormFastboatComponent = () => {
             <div className="col-md-2">
               <div className="dropdown">
                 <div
-                  className="btn btn-white  border border-dark-subtle "
+                  className="btn btn-white border border-dark-subtle"
                   type="button"
                   data-bs-toggle="dropdown"
                   style={{ width: "100%" }}
                 >
-                  <span className="fa fa-users" style={{paddingRight:"10px"}}></span>
+                  <span
+                    className="fa fa-users"
+                    style={{ paddingRight: "10px" }}
+                  ></span>
                   {totalPassengers} Pax
                 </div>
                 <ul className="dropdown-menu" style={{ width: "100%" }}>
-                  <div className="d-flex justify-content-between  border-bottom border-dark p-2">
+                  <div className="d-flex justify-content-between border-bottom border-dark p-2">
                     <div className="text">
                       Adult <br />
                       <small>Age 13+</small>
@@ -224,7 +240,7 @@ const FormFastboatComponent = () => {
                       ></button>
                     </div>
                   </div>
-                  <div className="d-flex justify-content-between  border-bottom border-dark p-2">
+                  <div className="d-flex justify-content-between border-bottom border-dark p-2">
                     <div>
                       Child <br />
                       <small>Age 3-12</small>
@@ -250,7 +266,7 @@ const FormFastboatComponent = () => {
                       ></button>
                     </div>
                   </div>
-                  <div className="d-flex justify-content-between  p-2">
+                  <div className="d-flex justify-content-between p-2">
                     <div>
                       Infant <br />
                       <small>Age 0-2</small>
@@ -280,17 +296,17 @@ const FormFastboatComponent = () => {
               </div>
             </div>
 
-            <div className="col-md-2 col-lg-2">
+            <div className="col-md-2">
               <button
-                className="btn btn-primary button-box justify-content-between"
                 type="submit"
+                className="btn btn-primary"
                 style={{ width: "100%" }}
               >
-                <span className="fa fa-search" style={{paddingRight:"5px"}}></span>
                 Search
               </button>
             </div>
           </form>
+          {error && <div className="alert alert-danger mt-3">{error}</div>}
         </div>
       </div>
     </div>

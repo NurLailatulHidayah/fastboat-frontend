@@ -20,6 +20,7 @@ import HowToBookPage from "./pages/HowToBookPage";
 import FastboatSearch from "./pages/FastboatSearch";
 import BookingPage from "./pages/BookingPage";
 import PaymentPage from "./pages/PaymentPage";
+import TransportDetailPage from "./pages/TransportDetailPage";
 // import Privacypolicy from "./pages/home/Privacypolicy";
 
 function App() {
@@ -36,7 +37,10 @@ function App() {
         {/* route fastboat */}
         <Route path="/fast-boat" Component={FastboatPage} />
         <Route path="/fast-boat/fast-boat-details/:slug" Component={FastboatDetailPage}/>
-        <Route path="/fast-boat-search" Component={FastboatSearch}/>
+
+        {/* route booking */}
+        <Route path="/fast-boat-search?" Component={FastboatSearch}/>
+        <Route path="/fast-boat-search/transport" Component={TransportDetailPage}/>
         <Route path="/booking" Component={BookingPage}/>
         <Route path="/payment" Component={PaymentPage}/>
 
