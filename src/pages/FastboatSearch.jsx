@@ -1,9 +1,111 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import api from "../api"; // Pastikan import axios instance
 import FormFastboatComponent from "../components/FormFastboatComponent";
 import { Modal } from "react-bootstrap";
+import { useLocation } from "react-router-dom"; // Import useLocation to get the query parameters
+import { useNavigate } from "react-router-dom";
 
 const FastboatSearch = () => {
+  const [availabilitys, setAvailabilitys] = useState([]);
+  const [error, setError] = useState(null);
+  const location = useLocation(); // Untuk mendapatkan query string dari URL
+
+  // Fungsi untuk menghitung durasi perjalanan
+  const calculateDuration = (departureTime, arrivalTime) => {
+    const [depHours, depMinutes] = departureTime.split(":").map(Number);
+    const [arrHours, arrMinutes] = arrivalTime.split(":").map(Number);
+
+    let totalMinutes = (arrHours - depHours) * 60 + (arrMinutes - depMinutes);
+
+    // Jika waktu kedatangan kurang dari waktu keberangkatan, maka perjalanan melewati tengah malam
+    if (totalMinutes < 0) {
+      totalMinutes += 24 * 60;
+    }
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours}h ${minutes}m`;
+  };
+
+  // Fetching data fastboat dengan query string
+  const fetchDataAvailable = async () => {
+    const query = location.search; // Ambil query dari URL
+    try {
+      const response = await api.get(`/api/availability/search${query}`);
+      console.log("API Response:", response.data);
+
+      if (response.data && response.data.success && response.data.data) {
+        let tripsWithDuration = [];
+
+        // Jika direction adalah one_way
+        if (response.data.data.one_trip) {
+          tripsWithDuration = response.data.data.one_trip.map((trip) => ({
+            ...trip,
+            trip_duration: calculateDuration(
+              trip.fba_dept_time,
+              trip.fba_arrival_time
+            ),
+          }));
+        }
+
+        // Jika direction adalah round_trip
+        if (
+          response.data.data.departure_trip &&
+          response.data.data.return_trip
+        ) {
+          const departureTrips = response.data.data.departure_trip.map(
+            (trip) => ({
+              ...trip,
+              trip_duration: calculateDuration(
+                trip.fba_dept_time,
+                trip.fba_arrival_time
+              ),
+            })
+          );
+
+          const returnTrips = response.data.data.return_trip.map((trip) => ({
+            ...trip,
+            trip_duration: calculateDuration(
+              trip.fba_dept_time,
+              trip.fba_arrival_time
+            ),
+          }));
+
+          // Menggabungkan departure dan return trip
+          tripsWithDuration = [...departureTrips, ...returnTrips];
+        }
+
+        if (tripsWithDuration.length > 0) {
+          setAvailabilitys(tripsWithDuration);
+        } else {
+          setAvailabilitys([]);
+          throw new Error("Data tidak ditemukan.");
+        }
+      } else {
+        setAvailabilitys([]);
+        throw new Error("Data tidak ditemukan.");
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          setError("Data tidak ditemukan.");
+        } else {
+          setError("Terjadi kesalahan pada server.");
+        }
+      } else {
+        setError("Tidak dapat terhubung ke server.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log("Fetching data with query:", location.search); // Log query string untuk debugging
+    fetchDataAvailable();
+  }, [location.search]); // Re-fetch data setiap kali query di URL berubah
+
   // Mengelola filter fixed
   const [showModal, setShowModal] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 991);
@@ -19,7 +121,6 @@ const FastboatSearch = () => {
     };
 
     const handleScroll = () => {
-      // Set posisi scroll di mana tombol akan menjadi sticky
       const scrollThreshold = 200;
       if (window.scrollY > scrollThreshold) {
         setIsSticky(true);
@@ -42,17 +143,15 @@ const FastboatSearch = () => {
   const [showPrivate, setShowPrivate] = useState(false);
   const [showArrival, setShowArrival] = useState(false);
 
-  // Fungsi untuk menangani klik View pada other option
   const toggleFastboats = () => setShowFastboats(!showFastboats);
   const togglePrivate = () => setShowPrivate(!showPrivate);
   const toggleArrival = () => setShowArrival(!showArrival);
 
-  const [selectedSort, setSelectedSort] = useState("Recommendation"); // Default sort recommendation
+  const [selectedSort, setSelectedSort] = useState("Recommendation");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
 
-  // handel Tutup dropdown sort by jika klik di luar area
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -67,7 +166,17 @@ const FastboatSearch = () => {
 
   const handleSortChange = (e) => {
     setSelectedSort(e.target.value);
-    // setDropdownOpen(false); // Tutup dropdown setelah memilih
+  };
+
+  const navigate = useNavigate();
+  const handleBookingClick = (trip) => {
+    // Pastikan mengirim data penumpang dari trip atau sumber lain yang sesuai
+    const adult = trip.adults || 1; // Default 1 adult jika tidak ada data
+    const child = trip.children || 0;
+    const infant = trip.infants || 0;
+
+    // Data penumpang dikirim saat navigasi ke halaman booking
+    navigate("/booking", { state: { adult, child, infant } });
   };
 
   return (
@@ -99,9 +208,9 @@ const FastboatSearch = () => {
               onClick={handleModalToggle}
               style={{
                 position: isSticky ? "fixed" : "absolute",
-                bottom: "20px", // Posisi tombol dari bawah (saat fixed)
-                right: "20px", // Posisi tombol dari kanan (saat fixed)
-                zIndex: 1000, // Agar tombol berada di atas elemen lain
+                bottom: "20px",
+                right: "20px",
+                zIndex: 1000,
               }}
             >
               <i className="fas fa-filter"></i>
@@ -348,7 +457,7 @@ const FastboatSearch = () => {
               {/* MixitUp Gallery */}
               <div className="mixitup-gallery">
                 <div className="filter-list">
-                  <div className="sort-dropdown " ref={dropdownRef}>
+                  <div className="sort-dropdown" ref={dropdownRef}>
                     <button
                       className="border rounded"
                       onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -356,7 +465,7 @@ const FastboatSearch = () => {
                       Sort By : <span>{selectedSort}</span>
                     </button>
                     {dropdownOpen && (
-                      <div className="dropdown-menu ">
+                      <div className="dropdown-menu">
                         <h4 className="mb-2">Sort By</h4>
                         <label>
                           <input
@@ -412,867 +521,213 @@ const FastboatSearch = () => {
                     )}
                   </div>
 
-                  {/* Room Block One */}
+                  {/* Render Results */}
                   <h4 className="option-best mb-2 mt-2">Best Options</h4>
-                  <div className="fastboat-search border rounded-3">
-                    <div className="row col p-3 mb-4">
-                      {/* Jika di desktop, card ini bisa diklik seluruhnya */}
-                      {!isMobile ? (
-                        <div
-                          onClick={() => (window.location.href = "/fast-boat")}
-                          className="full-card-link"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <div className="row">
-                            <div className="col-lg-4 comfort-section">
-                              <ul className="image-carousel owl-carousel owl-theme">
-                                <li>
-                                  <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
+                  {error && <p>{error}</p>}
+                  <div>
+                    {availabilitys.length > 0 ? (
+                      availabilitys
+                        .filter((trip) => trip.fbt_recom === 1)
+                        .map((trip, index) => (
+                          <div
+                            className="fastboat-search border rounded-3"
+                            key={index}
+                          >
+                            <div className="row col p-3 mb-4">
+                              <div
+                                onClick={() =>
+                                  (window.location.href = "/fast-boat")
+                                }
+                                className="full-card-link d-flex align-items-start"
+                                style={{
+                                  cursor: "pointer",
+                                  position: "relative",
+                                }}
+                                // className="d-flex align-items-start"
+                                // style={{ position: "relative" }}
+                              >
+                                {trip.fbt_recom === 1 && (
+                                  <div
+                                    className="mb-2 bg-primary-subtle text-primary-emphasis rounded-4 px-3 py-1"
+                                    style={{
+                                      fontSize: "14px",
+                                    }}
+                                  >
                                     Recommendation
                                   </div>
-                                  <div>
-                                    <img
-                                      src="image/fastboat/karunia-jaya.jpg"
-                                      alt="Fastboat"
-                                      className="rounded-2"
-                                    />
+                                )}
+                              </div>
+
+                              <div className="col-lg-4 comfort-section">
+                                <ul className="image-carousel owl-carousel owl-theme">
+                                  <li>
+                                    <div className="d-flex align-items-center">
+                                      <img
+                                        src={trip.fb_image1}
+                                        alt="Fastboat"
+                                        className="rounded-2 mt-2 "
+                                      />
+                                    </div>
+                                  </li>
+                                </ul>
+                              </div>
+
+                              <div className="col-lg-5 fastboat-search-content d-flex px-2">
+                                <div className="vertical-line-container">
+                                  <div className="circle"></div>
+                                  <div className="line"></div>
+                                  <div className="circle"></div>
+                                </div>
+                                <div className=" mt-2 d-flex flex-column">
+                                  <div className="time">
+                                    <b>{trip.fba_dept_time.slice(0, 5)}</b>{" "}
+                                    {trip.dept_port}
                                   </div>
-                                </li>
-                              </ul>
-                            </div>
+                                  <div className="route mt-3 d-flex align-items-center">
+                                    <img
+                                      src={trip.cpn_logo}
+                                      alt="Eka Jaya"
+                                      className="me-2"
+                                      style={{ width: "40px" }}
+                                    />
+                                    <span>
+                                      <b>{trip.cpn_name}</b>{" "}
+                                      {trip.trip_duration}
+                                    </span>
+                                  </div>
+                                  <div className="time mt-3">
+                                    <b>{trip.fba_arrival_time.slice(0, 5)}</b>{" "}
+                                    {trip.arrival_port}
+                                  </div>
+                                </div>
+                              </div>
 
-                            <div className="col-lg-5 fastboat-search-content d-flex px-4">
-                              <div className="vertical-line-container">
-                                <div className="circle"></div>
-                                <div className="line"></div>
-                                <div className="circle"></div>
-                              </div>
-                              <div className="schedule">
-                                <div className="time">
-                                  <b>15:25</b> Padangbai Harbor, Bali
+                              <div className="col-lg-2 price-box px-5">
+                                <div className="price">
+                                  <div>
+                                    IDR {trip.fba_adult_publish} / Adult
+                                  </div>
+                                  <div>
+                                    IDR {trip.fba_child_publish} / Child
+                                  </div>
                                 </div>
-                                <div className="route mt-2 d-flex align-items-center">
-                                  <img
-                                    src="/image/clients/logo-Eka_Jaya.jpg"
-                                    alt="Eka Jaya"
-                                    className="me-2"
-                                    style={{ width: "40px" }}
-                                  />
-                                  <span>
-                                    <b>Eka Jaya</b> 1H 30m
-                                  </span>
-                                </div>
-                                <div className="time mt-3">
-                                  <b>16:00</b> Gili Trawangan Port, Gili
-                                  Trawangan
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-2 price-box px-5">
-                              <div className="price">
-                                <div>IDR 350.000 / Adult</div>
-                                <div>IDR 350.000 / Child</div>
-                              </div>
-                              <a
-                                className="btn-style-two theme-btn"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        // Jika mobile, tampilkan tombol "Detail"
-                        <div className="row">
-                          <div className="col-lg-4 comfort-section">
-                            <ul className="image-carousel owl-carousel owl-theme">
-                              <li>
-                                <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                                  Recommendation
-                                </div>
-                                <div>
-                                  <img
-                                    src="image/fastboat/karunia-jaya.jpg"
-                                    alt="Fastboat"
-                                    className="rounded-2"
-                                  />
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div className="col-lg-4 fastboat-search-content d-flex px-4">
-                            <div className="vertical-line-container">
-                              <div className="circle"></div>
-                              <div className="line"></div>
-                              <div className="circle"></div>
-                            </div>
-                            <div className="schedule">
-                              <div className="time">
-                                <b>15:25</b> Padangbai Harbor, Bali
-                              </div>
-                              <div className="route mt-2 d-flex align-items-center">
-                                <img
-                                  src="/image/clients/logo-Eka_Jaya.jpg"
-                                  alt="Eka Jaya"
-                                  className="me-2"
-                                  style={{ width: "40px" }}
-                                />
-                                <span>
-                                  <b>Eka Jaya</b> 1H 30m
-                                </span>
-                              </div>
-                              <div className="time mt-3">
-                                <b>16:00</b> Gili Trawangan Port, Gili Trawangan
+                                {/* <a
+                                  className="btn-style-two theme-btn"
+                                  href="/booking"
+                                >
+                                  <div className="btn-wrap">
+                                    <span className="text-one">Book Now</span>
+                                    <span className="text-two">Book Now</span>
+                                  </div>
+                                </a> */}
+                                <button
+                                  className="btn-style-two theme-btn"
+                                  onClick={() => handleBookingClick(trip)} // Kirim trip sebagai parameter
+                                >
+                                  <div className="btn-wrap">
+                                    <span className="text-one">Book Now</span>
+                                    <span className="text-two">Book Now</span>
+                                  </div>
+                                </button>
                               </div>
                             </div>
                           </div>
-
-                          <div className="col-lg-3 price-box_mobile">
-                            <div className="price">
-                              <div>IDR 350.000 / Adult</div>
-                              <div>IDR 350.000 / Child</div>
-                            </div>
-                            <div className="d-flex ">
-                              <a
-                                className="btn-style-two theme-btn mt-1"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-
-                              <a
-                                className="detail theme-btn text-center"
-                                href="/fast-boat"
-                              >
-                                Details
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="fastboat-search border rounded-3">
-                    <div className="row col p-3 mb-4">
-                      {/* Jika di desktop, card ini bisa diklik seluruhnya */}
-                      {!isMobile ? (
-                        <div
-                          onClick={() => (window.location.href = "/fast-boat")}
-                          className="full-card-link"
-                          style={{ cursor: "pointer" }}
+                        ))
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 200 200"
+                      >
+                        <radialGradient
+                          id="a11"
+                          cx=".66"
+                          fx=".66"
+                          cy=".3125"
+                          fy=".3125"
+                          gradientTransform="scale(1.5)"
                         >
-                          <div className="row">
-                            <div className="col-lg-4 comfort-section">
-                              <ul className="image-carousel owl-carousel owl-theme">
-                                <li>
-                                  <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                                    Recommendation
-                                  </div>
-                                  <div>
-                                    <img
-                                      src="image/fastboat/karunia-jaya.jpg"
-                                      alt="Fastboat"
-                                      className="rounded-2"
-                                    />
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-
-                            <div className="col-lg-5 fastboat-search-content d-flex px-4">
-                              <div className="vertical-line-container">
-                                <div className="circle"></div>
-                                <div className="line"></div>
-                                <div className="circle"></div>
-                              </div>
-                              <div className="schedule">
-                                <div className="time">
-                                  <b>15:25</b> Padangbai Harbor, Bali
-                                </div>
-                                <div className="route mt-2 d-flex align-items-center">
-                                  <img
-                                    src="/image/clients/logo-Eka_Jaya.jpg"
-                                    alt="Eka Jaya"
-                                    className="me-2"
-                                    style={{ width: "40px" }}
-                                  />
-                                  <span>
-                                    <b>Eka Jaya</b> 1H 30m
-                                  </span>
-                                </div>
-                                <div className="time mt-3">
-                                  <b>16:00</b> Gili Trawangan Port, Gili
-                                  Trawangan
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-2 price-box px-5">
-                              <div className="price">
-                                <div>IDR 350.000 / Adult</div>
-                                <div>IDR 350.000 / Child</div>
-                              </div>
-                              <a
-                                className="btn-style-two theme-btn"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        // Jika mobile, tampilkan tombol "Detail"
-                        <div className="row">
-                          <div className="col-lg-4 comfort-section">
-                            <ul className="image-carousel owl-carousel owl-theme">
-                              <li>
-                                <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                                  Recommendation
-                                </div>
-                                <div>
-                                  <img
-                                    src="image/fastboat/karunia-jaya.jpg"
-                                    alt="Fastboat"
-                                    className="rounded-2"
-                                  />
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div className="col-lg-4 fastboat-search-content d-flex px-4">
-                            <div className="vertical-line-container">
-                              <div className="circle"></div>
-                              <div className="line"></div>
-                              <div className="circle"></div>
-                            </div>
-                            <div className="schedule">
-                              <div className="time">
-                                <b>15:25</b> Padangbai Harbor, Bali
-                              </div>
-                              <div className="route mt-2 d-flex align-items-center">
-                                <img
-                                  src="/image/clients/logo-Eka_Jaya.jpg"
-                                  alt="Eka Jaya"
-                                  className="me-2"
-                                  style={{ width: "40px" }}
-                                />
-                                <span>
-                                  <b>Eka Jaya</b> 1H 30m
-                                </span>
-                              </div>
-                              <div className="time mt-3">
-                                <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="col-lg-3 price-box_mobile">
-                            <div className="price">
-                              <div>IDR 350.000 / Adult</div>
-                              <div>IDR 350.000 / Child</div>
-                            </div>
-                            <div className="d-flex ">
-                              <a
-                                className="btn-style-two theme-btn mt-1"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-
-                              <a
-                                className="detail theme-btn text-center"
-                                href="/fast-boat"
-                              >
-                                Details
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="fastboat-search border rounded-3">
-                    <div className="row col p-3 mb-4">
-                      {/* Jika di desktop, card ini bisa diklik seluruhnya */}
-                      {!isMobile ? (
-                        <div
-                          onClick={() => (window.location.href = "/fast-boat")}
-                          className="full-card-link"
-                          style={{ cursor: "pointer" }}
+                          <stop offset={0} stopColor="#8CB2FF" />
+                          <stop
+                            offset=".3"
+                            stopColor="#8CB2FF"
+                            stopOpacity=".9"
+                          />
+                          <stop
+                            offset=".6"
+                            stopColor="#8CB2FF"
+                            stopOpacity=".6"
+                          />
+                          <stop
+                            offset=".8"
+                            stopColor="#8CB2FF"
+                            stopOpacity=".3"
+                          />
+                          <stop
+                            offset={1}
+                            stopColor="#8CB2FF"
+                            stopOpacity={0}
+                          />
+                        </radialGradient>
+                        <circle
+                          transform-origin="center"
+                          fill="none"
+                          stroke="url(#a11)"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeDasharray="200 1000"
+                          strokeDashoffset={0}
+                          cx={100}
+                          cy={100}
+                          r={5}
                         >
-                          <div className="row">
-                            <div className="col-lg-4 comfort-section">
-                              <ul className="image-carousel owl-carousel owl-theme">
-                                <li>
-                                  <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                                    Recommendation
-                                  </div>
-                                  <div>
-                                    <img
-                                      src="image/fastboat/karunia-jaya.jpg"
-                                      alt="Fastboat"
-                                      className="rounded-2"
-                                    />
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-
-                            <div className="col-lg-5 fastboat-search-content d-flex px-4">
-                              <div className="vertical-line-container">
-                                <div className="circle"></div>
-                                <div className="line"></div>
-                                <div className="circle"></div>
-                              </div>
-                              <div className="schedule">
-                                <div className="time">
-                                  <b>15:25</b> Padangbai Harbor, Bali
-                                </div>
-                                <div className="route mt-2 d-flex align-items-center">
-                                  <img
-                                    src="/image/clients/logo-Eka_Jaya.jpg"
-                                    alt="Eka Jaya"
-                                    className="me-2"
-                                    style={{ width: "40px" }}
-                                  />
-                                  <span>
-                                    <b>Eka Jaya</b> 1H 30m
-                                  </span>
-                                </div>
-                                <div className="time mt-3">
-                                  <b>16:00</b> Gili Trawangan Port, Gili
-                                  Trawangan
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-2 price-box px-5">
-                              <div className="price">
-                                <div>IDR 350.000 / Adult</div>
-                                <div>IDR 350.000 / Child</div>
-                              </div>
-                              <a
-                                className="btn-style-two theme-btn"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        // Jika mobile, tampilkan tombol "Detail"
-                        <div className="row">
-                          <div className="col-lg-4 comfort-section">
-                            <ul className="image-carousel owl-carousel owl-theme">
-                              <li>
-                                <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                                  Recommendation
-                                </div>
-                                <div>
-                                  <img
-                                    src="image/fastboat/karunia-jaya.jpg"
-                                    alt="Fastboat"
-                                    className="rounded-2"
-                                  />
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div className="col-lg-4 fastboat-search-content d-flex px-4">
-                            <div className="vertical-line-container">
-                              <div className="circle"></div>
-                              <div className="line"></div>
-                              <div className="circle"></div>
-                            </div>
-                            <div className="schedule">
-                              <div className="time">
-                                <b>15:25</b> Padangbai Harbor, Bali
-                              </div>
-                              <div className="route mt-2 d-flex align-items-center">
-                                <img
-                                  src="/image/clients/logo-Eka_Jaya.jpg"
-                                  alt="Eka Jaya"
-                                  className="me-2"
-                                  style={{ width: "40px" }}
-                                />
-                                <span>
-                                  <b>Eka Jaya</b> 1H 30m
-                                </span>
-                              </div>
-                              <div className="time mt-3">
-                                <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="col-lg-3 price-box_mobile">
-                            <div className="price">
-                              <div>IDR 350.000 / Adult</div>
-                              <div>IDR 350.000 / Child</div>
-                            </div>
-                            <div className="d-flex ">
-                              <a
-                                className="btn-style-two theme-btn mt-1"
-                                href="/booking"
-                              >
-                                <div className="btn-wrap">
-                                  <span className="text-one">Book Now</span>
-                                  <span className="text-two">Book Now</span>
-                                </div>
-                              </a>
-
-                              <a
-                                className="detail theme-btn text-center"
-                                href="/fast-boat"
-                              >
-                                Details
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                          <animateTransform
+                            type="rotate"
+                            attributeName="transform"
+                            calcMode="spline"
+                            dur="1.4"
+                            values="360;0"
+                            keyTimes="0;1"
+                            keySplines="0 0 1 1"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                        <circle
+                          transform-origin="center"
+                          fill="none"
+                          opacity=".2"
+                          stroke="#8CB2FF"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          cx={100}
+                          cy={100}
+                          r={5}
+                        />
+                      </svg>
+                    )}
                   </div>
-
-                  {/* End Room Block One */}
                 </div>
               </div>
             </div>
+
+            {/* Sidebar Menu */}
+            {/* <div className="col-lg-3 col-md-4 col-sm-12">
+              <aside className="sidebar">
+                <div className="form-group search-menu text-center">
+                  <div className="search-button" onClick={toggleArrival}>
+                    Search By Destination
+                  </div>
+                  <div className="search-button mt-3" onClick={toggleFastboats}>
+                    Show All Fastboats
+                  </div>
+                  <div className="search-button mt-3" onClick={togglePrivate}>
+                    Book Private Fastboat
+                  </div>
+                </div>
+              </aside>
+            </div> */}
           </div>
         </div>
       </section>
-
-      {/* Others Options Section */}
-      <section className="d-flex justify-content-end p-4 top-0 m-2">
-        <div className="option col-lg-9 col-md-8 col-sm-12">
-          <h4 className="option_title mb-2">Others Options</h4>
-          <div>
-            <div className="card p-3">
-              <div className="row">
-                <div className="option-other col-lg-8">
-                  <h4 className="mb-1">Fastboat (10)</h4>
-                  <p>Start From 07.00 Until 16.00</p>
-                </div>
-
-                <div className="price-box col-lg-4">
-                  <div className="price_min float-end">
-                    <div>Start From 350.000 / Adult</div>
-                  </div>
-                  <div className="btn float-end">
-                    {/* Tambahkan onClick handler untuk tombol View */}
-                    {/* <a
-                          className="btn-style-two theme-btn"
-                          onClick={handleViewFastboats}
-                        >
-                          <div className="btn-wrap">
-                            <span className="text-one">View</span>
-                            <span className="text-two">View</span>
-                          </div>
-                        </a> */}
-                    <a
-                      className="btn-style-two theme-btn"
-                      onClick={toggleFastboats}
-                    >
-                      <div className="btn-wrap">
-                        <span className="text-one">
-                          {showFastboats ? "Hide" : "View"}
-                        </span>
-                        <span className="text-two">
-                          {showFastboats ? "Hide" : "View"}
-                        </span>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Tampilkan daftar fastboat lainnya jika showOthers true */}
-            {showFastboats && (
-              <div className="fastboat-search border rounded-3">
-              <div className="row col p-3 mb-4">
-                {/* Jika di desktop, card ini bisa diklik seluruhnya */}
-                {!isMobile ? (
-                  <div
-                    onClick={() => (window.location.href = "/fast-boat")}
-                    className="full-card-link"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="row">
-                      <div className="col-lg-4 comfort-section">
-                        <ul className="image-carousel owl-carousel owl-theme">
-                          <li>
-                            {/* <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                              Recommendation
-                            </div> */}
-                            <div>
-                              <img
-                                src="image/fastboat/karunia-jaya.jpg"
-                                alt="Fastboat"
-                                className="rounded-2 mt-4"
-                              />
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-
-                      <div className="col-lg-5 fastboat-search-content d-flex px-4">
-                        <div className="vertical-line-container">
-                          <div className="circle"></div>
-                          <div className="line"></div>
-                          <div className="circle"></div>
-                        </div>
-                        <div className="schedule">
-                          <div className="time">
-                            <b>15:25</b> Padangbai Harbor, Bali
-                          </div>
-                          <div className="route mt-2 d-flex align-items-center">
-                            <img
-                              src="/image/clients/logo-Eka_Jaya.jpg"
-                              alt="Eka Jaya"
-                              className="me-2"
-                              style={{ width: "40px" }}
-                            />
-                            <span>
-                              <b>Eka Jaya</b> 1H 30m
-                            </span>
-                          </div>
-                          <div className="time mt-3">
-                            <b>16:00</b> Gili Trawangan Port, Gili
-                            Trawangan
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-lg-2 price-box px-5">
-                        <div className="price">
-                          <div>IDR 350.000 / Adult</div>
-                          <div>IDR 350.000 / Child</div>
-                        </div>
-                        <a
-                          className="btn-style-two theme-btn"
-                          href="/booking"
-                        >
-                          <div className="btn-wrap">
-                            <span className="text-one">Book Now</span>
-                            <span className="text-two">Book Now</span>
-                          </div>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Jika mobile, tampilkan tombol "Detail"
-                  <div className="row">
-                    <div className="col-lg-4 comfort-section">
-                      <ul className="image-carousel owl-carousel owl-theme">
-                        <li>
-                          <div className="mb-2 bg-primary-subtle text-primary-emphasis text-center rounded-4 w-75">
-                            Recommendation
-                          </div>
-                          <div>
-                            <img
-                              src="image/fastboat/karunia-jaya.jpg"
-                              alt="Fastboat"
-                              className="rounded-2"
-                            />
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="col-lg-4 fastboat-search-content d-flex px-4">
-                      <div className="vertical-line-container">
-                        <div className="circle"></div>
-                        <div className="line"></div>
-                        <div className="circle"></div>
-                      </div>
-                      <div className="schedule">
-                        <div className="time">
-                          <b>15:25</b> Padangbai Harbor, Bali
-                        </div>
-                        <div className="route mt-2 d-flex align-items-center">
-                          <img
-                            src="/image/clients/logo-Eka_Jaya.jpg"
-                            alt="Eka Jaya"
-                            className="me-2"
-                            style={{ width: "40px" }}
-                          />
-                          <span>
-                            <b>Eka Jaya</b> 1H 30m
-                          </span>
-                        </div>
-                        <div className="time mt-3">
-                          <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="col-lg-3 price-box_mobile">
-                      <div className="price">
-                        <div>IDR 350.000 / Adult</div>
-                        <div>IDR 350.000 / Child</div>
-                      </div>
-                      <div className="d-flex ">
-                        <a
-                          className="btn-style-two theme-btn mt-1"
-                          href="/booking"
-                        >
-                          <div className="btn-wrap">
-                            <span className="text-one">Book Now</span>
-                            <span className="text-two">Book Now</span>
-                          </div>
-                        </a>
-
-                        <a
-                          className="detail theme-btn text-center"
-                          href="/fast-boat"
-                        >
-                          Details
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            )}
-          </div>
-          <div className="mt-3">
-            <div className="card p-3">
-              <div className="row">
-                <div className="option-other col-lg-8">
-                  <h4 className="mb-1">Fast Boat + Private Car (10)</h4>
-                  <p>Start From 07.00 Until 16.00</p>
-                </div>
-
-                <div className="price-box col-lg-4">
-                  <div className="price_min float-end">
-                    <div>Start From 350.000 / Adult</div>
-                  </div>
-                  <div className="btn float-end">
-                    {/* Tambahkan onClick handler untuk tombol View */}
-                    {/* <a
-                          className="btn-style-two theme-btn"
-                          onClick={handleViewPrivate}
-                        >
-                          <div className="btn-wrap">
-                            <span className="text-one">View</span>
-                            <span className="text-two">View</span>
-                          </div>
-                        </a> */}
-                    <a
-                      className="btn-style-two theme-btn"
-                      onClick={togglePrivate}
-                    >
-                      <div className="btn-wrap">
-                        <span className="text-one">
-                          {showPrivate ? "Hide" : "View"}
-                        </span>
-                        <span className="text-two">
-                          {showPrivate ? "Hide" : "View"}
-                        </span>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Tampilkan daftar fastboat lainnya jika showOthers true */}
-            {showPrivate && (
-              <div className="fastboat-search border rounded-3 mt-3">
-                <div className="row col p-3">
-                  <div className="col-lg-4 comfort-section">
-                    <ul className="image-carousel owl-carousel owl-theme">
-                      <li>
-                        <div className="mt-4">
-                          <img
-                            src="image/fastboat/karunia-jaya.jpg"
-                            alt=""
-                            className="rounded-2"
-                          />
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Room Details */}
-                  <div className="col-lg-8 fastboat-search-content d-flex">
-                    <div className="vertical-line-container">
-                      <div className="circle"></div>
-                      <div className="line"></div>
-                      <div className="circle"></div>
-                    </div>
-                    <div className="schedule">
-                      <div className="time">
-                        <b>15:25</b> Padangbai Harbor, Bali
-                      </div>
-                      <div className="route mt-2">
-                        <img src="/image/clients/logo-Eka_Jaya.jpg" alt="" />
-                        <span>
-                          <b>Eka Jaya</b> 1H 30m
-                        </span>
-                      </div>
-                      <div className="time mt-3">
-                        <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                      </div>
-                    </div>
-
-                    {/* Pricing and Buttons */}
-                    <div className="price-box">
-                      <div className="price">
-                        <div>IDR 450.000 / Adult</div>
-                        <div>IDR 450.000 / Child</div>
-                      </div>
-
-                      <div className="d-flex">
-                        <a className="btn-style-two theme-btn" href="#">
-                          <div className="btn-wrap">
-                            <span className="text-one">Book Now</span>
-                            <span className="text-two">Book Now</span>
-                          </div>
-                        </a>
-                        {/* <a className="detail theme-btn" href="#">
-                              Details
-                            </a> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="mt-3">
-            <div className="card p-3">
-              <div className="row">
-                <div className="option-other col-lg-8">
-                  <h4 className="mb-1">Activity (Arrival Island)</h4>
-                  <p>Start From 07.00 Until 16.00</p>
-                </div>
-
-                <div className="price-box col-lg-4">
-                  <div className="price_min float-end">
-                    <div>Start From 350.000 / Adult</div>
-                  </div>
-                  <div className="btn float-end">
-                    {/* Tambahkan onClick handler untuk tombol View */}
-                    {/* <a
-                          className="btn-style-two theme-btn"
-                          onClick={handleViewArrival}
-                        >
-                          <div className="btn-wrap">
-                            <span className="text-one">View</span>
-                            <span className="text-two">View</span>
-                          </div>
-                        </a> */}
-                    <a
-                      className="btn-style-two theme-btn"
-                      onClick={toggleArrival}
-                    >
-                      <div className="btn-wrap">
-                        <span className="text-one">
-                          {showArrival ? "Hide" : "View"}
-                        </span>
-                        <span className="text-two">
-                          {showArrival ? "Hide" : "View"}
-                        </span>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Tampilkan daftar fastboat lainnya jika showOthers true */}
-            {showArrival && (
-              <div className="fastboat-search border rounded-3 mt-3">
-                <div className="row col p-3">
-                  <div className="col-lg-4 comfort-section">
-                    <ul className="image-carousel owl-carousel owl-theme">
-                      <li>
-                        <div className="mt-4">
-                          <img
-                            src="image/fastboat/karunia-jaya.jpg"
-                            alt=""
-                            className="rounded-2"
-                          />
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Room Details */}
-                  <div className="col-lg-8 fastboat-search-content d-flex">
-                    <div className="vertical-line-container">
-                      <div className="circle"></div>
-                      <div className="line"></div>
-                      <div className="circle"></div>
-                    </div>
-                    <div className="schedule">
-                      <div className="time">
-                        <b>15:25</b> Padangbai Harbor, Bali
-                      </div>
-                      <div className="route mt-2">
-                        <img src="/image/clients/logo-Eka_Jaya.jpg" alt="" />
-                        <span>
-                          <b>Eka Jaya</b> 1H 30m
-                        </span>
-                      </div>
-                      <div className="time mt-3">
-                        <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                      </div>
-                    </div>
-
-                    {/* Pricing and Buttons */}
-                    <div className="price-box">
-                      <div className="price">
-                        <div>IDR 450.000 / Adult</div>
-                        <div>IDR 450.000 / Child</div>
-                      </div>
-
-                      <div className="d-flex">
-                        <a className="btn-style-two theme-btn" href="#">
-                          <div className="btn-wrap">
-                            <span className="text-one">Book Now</span>
-                            <span className="text-two">Book Now</span>
-                          </div>
-                        </a>
-                        {/* <a className="detail theme-btn" href="#">
-                              Details
-                            </a> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-      {/* End Gallery Section */}
     </div>
   );
 };
