@@ -79,14 +79,22 @@ const FastboatPage = () => {
           />
 
           {/* See All Button */}
-          <div className="text-center mt-4">
+          {/* <div className="text-center mt-4 mb-4">
             <button
               className="btn border border-dark"
               onClick={handleSeeAllClick}
             >
               See More
             </button>
-          </div>
+          </div> */}
+          <div className="button-box text-center mt-4 mb-4">
+              <button className="btn-style-three theme-btn" onClick={handleSeeAllClick}>
+                <div className="btn-wrap">
+                  <span className="text-one">See More</span>
+                  <span className="text-two">See More</span>
+                </div>
+              </button>
+            </div>
         </div>
       </section>
     </div>

@@ -5,15 +5,18 @@ import Select from "react-select";
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import id from "air-datepicker/locale/id";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { CurrencyProvider, useCurrency } from '../context/CurrencyContext';
 
 const FormFastboatComponent = () => {
-  // Get data Port
   const [ports, setPorts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const fetchDataPort = async () => {
     try {
@@ -29,21 +32,38 @@ const FormFastboatComponent = () => {
 
   useEffect(() => {
     fetchDataPort();
-  }, []);
+
+    const searchParams = new URLSearchParams(location.search);
+    const deptPort = searchParams.get("port_name_departure");
+    const arrPort = searchParams.get("port_name_arrival");
+    const deptDate = searchParams.get("departure_date");
+    const returnDate = searchParams.get("return_date");
+    const adult = searchParams.get("adult");
+    const child = searchParams.get("child");
+    const infant = searchParams.get("infant");
+
+    if (deptPort && arrPort && deptDate) {
+      setDeparturePort(deptPort);
+      setArrivalPort(arrPort);
+      setDeptDate(deptDate);
+      setReturnDate(returnDate);
+      setAdultCount(adult ? parseInt(adult) : 1);
+      setChildCount(child ? parseInt(child) : 0);
+      setInfantCount(infant ? parseInt(infant) : 0);
+      setIsFormSubmitted(true);
+    }
+  }, [location.search]);
 
   const portOptions = ports.map((port) => ({
     value: port.prt_name_en,
     label: port.prt_name_en,
   }));
 
-  // Mengelola tanggal
   const formatDateToYMD = (date) => {
     if (!date) return null;
-
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
   };
 
@@ -90,10 +110,10 @@ const FormFastboatComponent = () => {
     };
   }, []);
 
-  // Mengelola Passenger
   const [adultCount, setAdultCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
+  const { currency } = useCurrency();
 
   const handleCountChange = (setter, count, change) => {
     setter(Math.max(0, count + change));
@@ -104,29 +124,28 @@ const FormFastboatComponent = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validasi input
     if (!departurePort || !arrivalPort || !deptDate) {
       alert("Semua field wajib diisi kecuali Return Date.");
       return;
     }
 
-    // Determine the direction based on the returnDate
     const direction = returnDate ? "round_trip" : "one_way";
 
-    // Construct the search URL with query parameters
     const searchParams = new URLSearchParams({
       direction,
       port_name_departure: departurePort,
       port_name_arrival: arrivalPort,
       departure_date: deptDate,
-      return_date: returnDate || "", 
+      return_date: returnDate || "",
       adult: adultCount,
       child: childCount,
       infant: infantCount,
+      currency,
     }).toString();
 
-    // Redirect to the search page with parameters
+    // Navigasi ke halaman pencarian dengan parameter yang terupdate
     navigate(`/fast-boat-search?${searchParams}`);
+    setIsFormSubmitted(true);
   };
 
   return (
@@ -140,6 +159,7 @@ const FormFastboatComponent = () => {
                 options={portOptions}
                 placeholder="Departure Port"
                 onChange={(selected) => setDeparturePort(selected.value)}
+                value={departurePort ? { value: departurePort, label: departurePort } : null}
                 isDisabled={loading}
                 required
               />
@@ -150,6 +170,7 @@ const FormFastboatComponent = () => {
                 options={portOptions}
                 placeholder="Arrival Port"
                 onChange={(selected) => setArrivalPort(selected.value)}
+                value={arrivalPort ? { value: arrivalPort, label: arrivalPort } : null}
                 isDisabled={loading}
                 required
               />
@@ -207,10 +228,7 @@ const FormFastboatComponent = () => {
                   data-bs-toggle="dropdown"
                   style={{ width: "100%" }}
                 >
-                  <span
-                    className="fa fa-users"
-                    style={{ paddingRight: "10px" }}
-                  ></span>
+                  <span className="fa fa-users" style={{ paddingRight: "10px" }}></span>
                   {totalPassengers} Pax
                 </div>
                 <ul className="dropdown-menu" style={{ width: "100%" }}>
@@ -240,10 +258,11 @@ const FormFastboatComponent = () => {
                       ></button>
                     </div>
                   </div>
+
                   <div className="d-flex justify-content-between border-bottom border-dark p-2">
-                    <div>
+                    <div className="text">
                       Child <br />
-                      <small>Age 3-12</small>
+                      <small>Age 2-12</small>
                     </div>
                     <div>
                       <button
@@ -266,10 +285,11 @@ const FormFastboatComponent = () => {
                       ></button>
                     </div>
                   </div>
+
                   <div className="d-flex justify-content-between p-2">
-                    <div>
+                    <div className="text">
                       Infant <br />
-                      <small>Age 0-2</small>
+                      <small>Under 2</small>
                     </div>
                     <div>
                       <button
@@ -302,11 +322,10 @@ const FormFastboatComponent = () => {
                 className="btn btn-primary"
                 style={{ width: "100%" }}
               >
-                Search
+                {isFormSubmitted ? "Update" : "Search"}
               </button>
             </div>
           </form>
-          {error && <div className="alert alert-danger mt-3">{error}</div>}
         </div>
       </div>
     </div>

@@ -4,19 +4,16 @@ import PaymentComponent from "../components/PaymentComponent";
 import DekstopPaymentComponent from "../components/DekstopPaymentComponent";
 
 const PaymentPage = () => {
-
   // Tambahkan state untuk negara
   const [selectedCountry, setSelectedCountry] = useState("Indonesia"); // Inisialisasi dengan nilai default
 
   const [isModal, setIsModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState(null); 
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   // Function untuk handle klik tombol pembayaran
   const handlePaymentSelect = (method) => {
     setSelectedPayment(method);
   };
-
-  
 
   // Function untuk cek ukuran layar
   const checkScreenSize = () => {
@@ -31,7 +28,6 @@ const PaymentPage = () => {
       window.removeEventListener("resize", checkScreenSize); // Cleanup event listener
     };
   }, []);
-
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 999);
 
@@ -48,7 +44,10 @@ const PaymentPage = () => {
 
   return (
     <section className="row clearfix m-5">
-      <div className="col-lg-8 accordion accordion-flush" id="accordionFlushExample">
+      <div
+        className="col-lg-8 accordion accordion-flush"
+        id="accordionFlushExample"
+      >
         {/* Itinerary */}
         <div className="accordion-item border border-black rounded">
           <h2 className="accordion-header  ">
@@ -388,10 +387,10 @@ const PaymentPage = () => {
                   <div>Subtotal</div>
                   <div>IDR 750.000</div>
                 </div>
-                <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
+                {/* <div className="d-flex justify-content-between fw-bolder mt-2 border-top">
                   <div>Pay Amount</div>
                   <div>IDR 750.000</div>
-                </div>
+                </div> */}
               </div>
               <div className="border-end"></div>
               <div className="col-lg-6 p-2">
