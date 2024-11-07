@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { CurrencyProvider } from "./context/CurrencyContext";
 import NavbarComponent from "./components/NavbarComponent";
 import FooterComponent from "./components/FooterComponent";
 import HomePage from "./pages/HomePage";
@@ -26,41 +27,48 @@ import TransportDetailPage from "./pages/TransportDetailPage";
 function App() {
   return (
     <div>
-      <NavbarComponent />
-      <Routes>
-        {/* route menu */}
-        <Route path="/" Component={HomePage} />
-        {/* <Route path="/trip" Component={TripPage} /> */}
-        <Route path="/blogs" Component={BlogsPage} />
-        <Route path="/contact" Component={ContactPage} />
+      <CurrencyProvider>
+        <NavbarComponent />
+        <Routes>
+          {/* route menu */}
+          <Route path="/" Component={HomePage} />
+          {/* <Route path="/trip" Component={TripPage} /> */}
+          <Route path="/blogs" Component={BlogsPage} />
+          <Route path="/contact" Component={ContactPage} />
 
-        {/* route fastboat */}
-        <Route path="/fast-boat" Component={FastboatPage} />
-        <Route path="/fast-boat/fast-boat-details/:slug" Component={FastboatDetailPage}/>
+          {/* route fastboat */}
+          <Route path="/fast-boat" Component={FastboatPage} />
+          <Route
+            path="/fast-boat/fast-boat-details/:slug"
+            Component={FastboatDetailPage}
+          />
 
-        {/* route booking */}
-        <Route path="/fast-boat-search?" Component={FastboatSearch}/>
-        <Route path="/fast-boat-search/transport" Component={TransportDetailPage}/>
-        <Route path="/booking" Component={BookingPage}/>
-        <Route path="/payment" Component={PaymentPage}/>
+          {/* route booking */}
+          <Route path="/fast-boat-search?" Component={FastboatSearch} />
+          <Route
+            path="/fast-boat-search/transport"
+            Component={TransportDetailPage}
+          />
+          <Route path="/booking" Component={BookingPage} element={<BookingPage />}/>
+          <Route path="/payment" Component={PaymentPage} />
 
-        {/* route blogs */}
-        <Route path="/blogs-details" Component={BlogsDetailPage}/>
+          {/* route blogs */}
+          <Route path="/blogs-details" Component={BlogsDetailPage} />
 
-        {/* route port */}
-        <Route path="/ports" Component={PortPage}/>
-        <Route path="/ports/:slug" Component={PortDetailPage}/>
+          {/* route port */}
+          <Route path="/ports" Component={PortPage} />
+          <Route path="/ports/:slug" Component={PortDetailPage} />
 
-        {/* route footer */}
-        <Route path="/about" Component={AboutUsPage} />
-        <Route path="/how-to-book" Component={HowToBookPage} />
-        <Route path="/term-and-conditions" Component={TermConditions} />
-        <Route path="/privacy-policy" Component={PrivacypolicyPage} />
-        <Route path="/departing-arriving" Component={DepartingArrivingPage} />
-        <Route path="/frequently-asked-questions" Component={FaqPage} />
-
-      </Routes>
-      <FooterComponent />
+          {/* route footer */}
+          <Route path="/about" Component={AboutUsPage} />
+          <Route path="/how-to-book" Component={HowToBookPage} />
+          <Route path="/term-and-conditions" Component={TermConditions} />
+          <Route path="/privacy-policy" Component={PrivacypolicyPage} />
+          <Route path="/departing-arriving" Component={DepartingArrivingPage} />
+          <Route path="/frequently-asked-questions" Component={FaqPage} />
+        </Routes>
+        <FooterComponent />
+      </CurrencyProvider>
     </div>
   );
 }
