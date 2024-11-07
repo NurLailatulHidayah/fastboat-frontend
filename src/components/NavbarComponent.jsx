@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import api from "../api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+// import { CurrencyProvider, useCurrency } from "./CurrencyContext";
+import { CurrencyProvider, useCurrency } from "../context/CurrencyContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const NavbarComponent = () => {
@@ -30,6 +33,40 @@ const NavbarComponent = () => {
   const isActive = (path) => {
     return location.pathname === path ? "active" : "";
   };
+
+  const { currency, updateCurrency } = useCurrency();
+  const [currencies, setCurrencies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fungsi untuk mengambil data currency
+    const fetchCurrencies = async () => {
+      try {
+        const response = await api.get('/api/currency');
+        
+        // Periksa apakah data ada, lalu filter currency yang aktif
+        if (response.data && response.data.data) {
+          const activeCurrencies = response.data.data.filter(cur => cur.cy_status === 1);
+          setCurrencies(activeCurrencies);
+        }
+      } catch (error) {
+        console.error("Error fetching currencies:", error);
+      } finally {
+        setLoading(false); // Set loading false setelah fetch selesai
+      }
+    };
+
+    fetchCurrencies(); // Panggil fungsi untuk mengambil data currency
+  }, []);
+
+  const handleCurrencyChange = (event) => {
+    const newCurrency = event.target.value;
+    updateCurrency(newCurrency);  // Update globally
+  };
+
+  // if (loading) {
+  //   return <div>...</div>;
+  // }
 
   return (
     <div className="header header_style_two border-bottom">
@@ -73,17 +110,28 @@ const NavbarComponent = () => {
                   </li>
                   <li className="main_menu">
                     <select
-                      defaultValue="4"
+                      value={currency.cy_code} // Controlled by context
+                      // onChange={(e) => setCurrency(e.target.value)}
+                      onChange={handleCurrencyChange}
                       className="form-select"
-                      id="currency"
+                      // id="currency"
                       required
                     >
-                      <option value="1">AUD</option>
-                      <option value="2">EUR</option>
-                      <option value="3">GBP</option>
-                      <option value="4">IDR</option>
-                      <option value="5">SGD</option>
-                      <option value="6">USD</option>
+                      {/* {currencies.map((currency) => (
+                        <option key={currency.cy_id} value={currency.cy_code}>
+                          {currency.cy_code}
+                        </option>
+                      ))} */}
+                      {/* {currencies.map((curr) => (
+                        <option key={curr.cy_code} value={curr.cy_code}>
+                          {curr.cy_code}
+                        </option>
+                      ))} */}
+                      {currencies.map((cur) => (
+                        <option key={cur.cy_code} value={cur.cy_code}>
+                           {cur.cy_code}
+                        </option>
+                      ))}
                     </select>
                   </li>
                 </ul>
