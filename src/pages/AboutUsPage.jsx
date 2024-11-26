@@ -9,7 +9,7 @@ function AboutUsPage() {
       {/* Page Banner */}
       <section
         className="page-banner"
-        style={{ backgroundImage: "url(/image/main-slider/1.jpg)" }}
+        style={{ backgroundImage: "url(/image/main-slider/bg1.jpg)" }}
       >
         <div className="auto-container">
           {/* <ul className="page-breadbrumbs">
