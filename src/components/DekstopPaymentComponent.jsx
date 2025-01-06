@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Mengimpor hook untuk mendapatkan lokasi saat ini dari React Router.
 
 const DekstopPaymentComponent = () => {
+  const location = useLocation();
   const [selectedMethod, setSelectedMethod] = useState("");
   const [selectedLogo, setSelectedLogo] = useState("");
 
@@ -28,8 +30,8 @@ const DekstopPaymentComponent = () => {
     }
 
     // Menghapus metode pembayaran yang tersimpan saat halaman direload
-    // localStorage.removeItem("selectedMethod");
-    // localStorage.removeItem("selectedLogo");
+    localStorage.removeItem("selectedMethod");
+    localStorage.removeItem("selectedLogo");
 
     // const handleStorageChange = () => {
     //   const updatedMethod = localStorage.getItem("selectedMethod");
@@ -69,10 +71,12 @@ const DekstopPaymentComponent = () => {
     <div>
       <div className=" justify-content-between text-center">
         {/* Paypal */}
-        <div
+        {/* <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Paypal")}
           style={{
             backgroundColor: selectedMethod === "Paypal" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -98,14 +102,15 @@ const DekstopPaymentComponent = () => {
               style={{ width: "50px", height: "50px" }}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Credit Card */}
-        <div
+        {/* <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Credit Card")}
           style={{
-            backgroundColor:
-              selectedMethod === "Credit Card" ? "#e0f7fa" : "white",
+            backgroundColor: selectedMethod === "Credit Card" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -131,14 +136,16 @@ const DekstopPaymentComponent = () => {
               style={{ width: "150px", height: "50px" }}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Bank BCA */}
         <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Bank BCA")}
           style={{
             backgroundColor:
               selectedMethod === "Bank BCA" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -169,9 +176,11 @@ const DekstopPaymentComponent = () => {
         {/* Bank BNI */}
         <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Bank BNI")}
           style={{
             backgroundColor:
               selectedMethod === "Bank BNI" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -235,9 +244,11 @@ const DekstopPaymentComponent = () => {
         {/* Bank BRI */}
         <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Bank BRI")}
           style={{
             backgroundColor:
               selectedMethod === "Bank BRI" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -268,9 +279,11 @@ const DekstopPaymentComponent = () => {
         {/* Bank Mandiri */}
         <div
           className="mb-3"
+          onClick={() => handlePaymentSelect("Bank Mandiri")}
           style={{
             backgroundColor:
               selectedMethod === "Bank Mandiri" ? "#e0f7fa" : "white",
+            cursor: "pointer",
             flex: 1,
             marginRight: "10px",
           }}
@@ -364,7 +377,6 @@ const DekstopPaymentComponent = () => {
           </div>
         </div> */}
       </div>
-      
     </div>
   );
 };

@@ -1,7 +1,7 @@
 //import axios
 import axios from "axios";
 
-const token = 'Qn2bZCVMxOca1IP5YiBLqoIyUTaL0to4NCrG0Tjdsh2xfedfM6vxP68lx48n';
+const token = "B5tIHQKg438JXLcCkbullTKtW0iWdouawjAww21OfEwtD5KrVe6z2b41bLlX";
 
 const Api = axios.create({
   //set default endpoint API
@@ -10,7 +10,6 @@ const Api = axios.create({
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
-    
   },
 });
 

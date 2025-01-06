@@ -1,11 +1,144 @@
 import React, { useEffect, useState } from "react";
+import api from "../api"; // Pastikan import axios instance
 import "bootstrap/dist/css/bootstrap.min.css";
 import PaymentComponent from "../components/PaymentComponent";
 import DekstopPaymentComponent from "../components/DekstopPaymentComponent";
+import { useParams, useLocation } from "react-router-dom";
 
-const PaymentPage = () => {
+const PaymentPage = (bookingData) => {
+  const { orderId } = useParams(); // Mengambil fbo_order_id dari URL
+  const [bookingInfo, setBookingInfo] = useState([]);
+  const [passengerDetails, setPassengerDetails] = useState([]);
+  // const [type, setType] = useState("");
+  const location = useLocation();
+
   // Tambahkan state untuk negara
+  const [nationalitys, setNationalitys] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("Indonesia"); // Inisialisasi dengan nilai default
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  // const [selectedPayment, setSelectedPayment] = useState(null);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false); // State untuk checkout loading
+
+  // Pastikan `orderId` tersedia sebelum memuat data
+  // useEffect(() => {
+
+  //   if (orderId) {
+  //     fetchPaymentData(orderId);
+  //   } else {
+  //     console.error("Order ID tidak ditemukan.");
+  //   }
+  // }, [orderId]);
+
+  // const fetchPaymentData = async () => {
+  //   try {
+  //     const response = await api.get(`/api/payment`);
+  //     setPaymentData(response.data);
+  //     console.log("data payment :", response.data);
+  //   } catch (error) {
+  //     console.error("Gagal memuat data pembayaran:", error.response.data);
+  //   }
+  // };
+  //   useEffect(() => {
+
+  //     if (!contactId) {
+  //       console.error("contactId tidak ditemukan!");
+  //       return;
+  //     }
+
+  //   const fetchPaymentData = async () => {
+  //     try {
+  //       const response = await api.get(`/api/payment`, {params: {contactId},});
+  //       setPaymentData(response.data);
+  //       setLoading(false);
+  //       console.log("data payment :", response.data);
+  //     } catch (err) {
+  //       setError(err.response?.data?.message || "Terjadi kesalahan.");
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchPaymentData();
+  // }, [contactId]);
+
+  // if (loading) return <p>Loading...</p>;
+  //   if (error) return <p>Error: {error}</p>;
+
+  const fetchDataPayment = async () => {
+    try {
+      const response = await api.get(`/api/payment?orderId=${orderId}`);
+      setBookingInfo(response.data);
+      setPassengerDetails(response.data.data);
+      console.log(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching booking data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataPayment();
+  }, [orderId]);
+  
+
+  // if (loading) { 
+  //   return <div>Loading...</div>;
+  // }
+
+  // if (!bookingData) {
+  //   return <div>Data booking tidak ditemukan.</div>;
+  // }
+
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error}</p>;
+  // Ambil data pembayaran
+  // const fetchPaymentData = async () => {
+  //   try {
+  //     const response = await api.get("/api/payment?contactId=${id}");
+  //     const paymentData = response.data.data || [];
+  //     setPaymentData(paymentData);
+  //     console.log("data payment :", response.data.data);
+  //     // setPaymentData(response.data.data || []);
+  //   } catch (err) {
+  //     console.error("Error fetching payments:", err);
+  //     setError("Terjadi kesalahan saat memuat data pembayaran.");
+  //   }
+  // };
+
+  const fetchDataNationalitys = async () => {
+    try {
+      const response = await api.get("/api/nationality");
+      // setNationalitys(response.data.data || []);
+      const nationalityData = response.data.data || [];
+      setNationalitys(nationalityData);
+
+      // Cari ID untuk Indonesia dan set sebagai default jika ditemukan
+      const indonesia = nationalityData.find(
+        (nationality) => nationality.nas_country === "Indonesia"
+      );
+      // if (indonesia) {
+      //   setSelectedCountry(indonesia.nas_id);
+
+      // }
+      if (indonesia) {
+        setSelectedCountry(indonesia.nas_id);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setError("Terjadi kesalahan saat memuat data. Coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchDataNationalitys();
+  }, []);
+
+  const nationalityOptions = nationalitys.map((nationality) => ({
+    value: nationality.nas_id,
+    label: nationality.nas_country,
+  }));
 
   const [isModal, setIsModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -13,6 +146,14 @@ const PaymentPage = () => {
   // Function untuk handle klik tombol pembayaran
   const handlePaymentSelect = (method) => {
     setSelectedPayment(method);
+  };
+
+  const renderPaymentComponent = () => {
+    if (isModal) {
+      return <PaymentComponent onSelect={handlePaymentSelect} />;
+    } else {
+      return <DekstopPaymentComponent onSelect={handlePaymentSelect} />;
+    }
   };
 
   // Function untuk cek ukuran layar
@@ -42,10 +183,31 @@ const PaymentPage = () => {
     };
   }, []);
 
+
+   // Fungsi untuk menangani Checkout
+   const handleCheckout = async () => {
+    const paymentData = {
+      contactId: bookingInfo.ctc_id, // Mengambil contactId dari bookingInfo
+      payment_method: "Bank Transfer", // Menggunakan metode pembayaran yang diinginkan
+    };
+
+    try {
+      const response = await api.post('/api/payment/xendit', paymentData);
+      const invoiceUrl = response.data.invoice_url; // Mengambil URL invoice dari respons
+      window.location.href = invoiceUrl; // Mengarahkan pengguna ke URL invoice
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      alert("Terjadi kesalahan saat melakukan pembayaran. Silakan coba lagi.");
+    }
+  };
+
+
+  // const { bookingDepart } = bookingData;
+
   return (
-    <section className="row clearfix m-5">
+    <section className="row clearfix m-3 px-3">
       <div
-        className="col-lg-8 accordion accordion-flush"
+        className="col-lg-8 accordion accordion-flush "
         id="accordionFlushExample"
       >
         {/* Itinerary */}
@@ -68,63 +230,126 @@ const PaymentPage = () => {
             className="accordion-collapse collapse"
             data-bs-parent="#accordionFlushExample"
           >
-            <div className="accordion-body opacity-100 m-3">
+            <div className="accordion-body opacity-100 m-2">
               {" "}
-              <div className="row clearfix   border border-dark rounded-1">
-                <div className="d-flex ">
-                  <div className="col-lg-4 align-content-center align-items-start px-1">
-                    <div className="m-2">Departing Trip : 24 Sep 2024</div>
-                    <div className="m-2">
-                      Booking ID : <b>FHWXOZ</b>
+              
+              <div className="row clearfix mt-3 border border-dark rounded-1 align-items-center p-2">
+                <div
+                  className="col-lg-4 d-flex flex-column "
+                  style={{ fontSize: "14px" }}
+                >
+                  <div className="m-1">
+                    Depart Trip : {bookingInfo?.data?.bookingDepart?.fbo_trip_date}
+                  </div>
+                  <div className="m-1">
+                    Booking ID : <b>{bookingInfo?.data?.bookingDepart?.fbo_booking_id}</b>
+                  </div>
+                  <div className="m-1">
+                    Status :{" "}
+                    <button type="button" className="btn btn-danger btn-sm">
+                    {bookingInfo?.data?.bookingDepart?.fbo_payment_status}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="col-lg-3 d-flex justify-content-center mt-3 px-0">
+                  <div className="comfort-section">
+                    <img
+                      src={bookingInfo?.data?.bookingDepart?.fb_image1}
+                      alt="Fastboat"
+                      className="rounded-2"
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-5 px-3 d-flex flex-column  justify-content-center ">
+                  <div className="d-flex fastboat-search-content align-items-center  ">
+                    <div className="vertical-line-container m-1">
+                      <div className="circle"></div>
+                      <div className="line"></div>
+                      <div className="circle"></div>
                     </div>
-                    <div className="m-2">
-                      Status :{" "}
-                      <button type="button" className="btn btn-danger btn-sm">
-                        Unpaid
-                      </button>
+                    <div className="schedule m-1 px-0 align-items-center mt-3">
+                      <div className="time">
+                        <b>{bookingInfo?.data?.bookingDepart?.fba_dept_time}</b> {bookingInfo?.data?.bookingDepart?.fbo_departure_port},
+                        
+                      </div>
+                      <div className="route  d-flex">
+                        <img
+                          src={bookingInfo?.data?.bookingDepart?.cpn_logo}
+                          alt="Eka Jaya"
+                          className="me-2"
+                          style={{ width: "40px" }}
+                        />
+                        <span>
+                          <b>{bookingInfo?.data?.bookingDepart?.cpn_name}</b> 1H 30m
+                        </span>
+                      </div>
+                      <div className="time ">
+                        <b>{bookingInfo?.data?.bookingDepart?.fba_arrival_time}</b> 
+                        {bookingInfo?.data?.bookingDepart?.fbo_arrival_port}
+                      </div>
                     </div>
                   </div>
-                  <div className="row col-8 align-items-end">
-                    <div className="col-lg-4 comfort-section">
-                      <ul className="image-carousel owl-carousel owl-theme p-3 align-content-center">
-                        <li>
-                          <div>
-                            <img
-                              src="image/fastboat/karunia-jaya.jpg"
-                              alt="Fastboat"
-                              className="rounded-2 "
-                            />
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
+                </div>
+              </div>
+              <div className="row clearfix mt-3 border border-dark rounded-1 align-items-center p-2">
+                <div
+                  className="col-lg-4 d-flex flex-column "
+                  style={{ fontSize: "14px" }}
+                >
+                  <div className="m-1">Return Trip : {bookingInfo?.data?.bookingReturn?.fbo_trip_date}</div>
+                  <div className="m-1">
+                    Booking ID : <b>{bookingInfo?.data?.bookingReturn?.fbo_booking_id}</b>
+                  </div>
+                  <div className="m-1">
+                    Status :{" "}
+                    <button type="button" className="btn btn-danger btn-sm">
+                    {bookingInfo?.data?.bookingReturn?.fbo_payment_status}
+                    </button>
+                  </div>
+                </div>
 
-                    <div className="col-lg-6 fastboat-search-content d-flex px-0 align-content-center">
-                      <div className="vertical-line-container">
-                        <div className="circle"></div>
-                        <div className="line"></div>
-                        <div className="circle"></div>
+                <div className="col-lg-3 d-flex justify-content-center mt-3 px-0">
+                  <div className="comfort-section">
+                    <img
+                      src={bookingInfo?.data?.bookingReturn?.fb_image1}
+                      alt="Fastboat"
+                      className="rounded-2"
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-5 px-3 d-flex flex-column  justify-content-center ">
+                  <div className="d-flex fastboat-search-content align-items-center  ">
+                    {/* <div className=" "> */}
+                    <div className="vertical-line-container m-1">
+                      <div className="circle"></div>
+                      <div className="line"></div>
+                      <div className="circle"></div>
+                    </div>
+                    <div className="schedule m-1 px-0 align-items-center mt-3">
+                      <div className="time">
+                        <b>{bookingInfo?.data?.bookingReturn?.fba_dept_time}</b> {bookingInfo?.data?.bookingReturn?.fbo_departure_port}
                       </div>
-                      <div className="schedule mb-3">
-                        <div className="time">
-                          <b>15:25</b> Padangbai Harbor, Bali
-                        </div>
-                        <div className="route mt-2 d-flex align-items-center">
-                          <img
-                            src="/image/clients/logo-Eka_Jaya.jpg"
-                            alt="Eka Jaya"
-                            className="me-2"
-                            style={{ width: "40px" }}
-                          />
-                          <span>
-                            <b>Eka Jaya</b> 1H 30m
-                          </span>
-                        </div>
-                        <div className="time mt-3">
-                          <b>16:00</b> Gili Trawangan Port, Gili Trawangan
-                        </div>
+                      <div className="route  d-flex">
+                        <img
+                          src={bookingInfo?.data?.bookingReturn?.cpn_logo}
+                          alt="Eka Jaya"
+                          className="me-2"
+                          style={{ width: "40px" }}
+                        />
+                        <span>
+                          <b>{bookingInfo?.data?.bookingReturn?.cpn_name}</b> 1H 30m
+                        </span>
+                      </div>
+                      <div className="time ">
+                        <b>{bookingInfo?.data?.bookingReturn?.fba_arrival_time}</b> {bookingInfo?.data?.bookingReturn?.fbo_arrival_port}
                       </div>
                     </div>
+                    {/* </div> */}
                   </div>
                 </div>
               </div>
@@ -155,7 +380,7 @@ const PaymentPage = () => {
               className="btn btn-link p-0"
               data-bs-toggle="modal"
               data-bs-target="#editModal"
-              style={{ textAlign: "right" }}
+              style={{ textAlign: "right", color: "black" }}
             >
               <i className="fas fa-edit" style={{ fontSize: "20px" }}></i>
             </button>
@@ -164,12 +389,12 @@ const PaymentPage = () => {
           {/* Contact */}
           <div className="card-body table-responsive">
             <table className="table">
-              <thead className="table-dark text-white">
+              <thead style={{ background: "#297cbb", color: "white" }}>
                 <tr>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   <th scope="col">Phone</th>
-                  <th scope="col">Negara</th>
+                  <th scope="col">Nationality</th>
                 </tr>
               </thead>
               <tbody>
@@ -262,8 +487,16 @@ const PaymentPage = () => {
                         onChange={(e) => setSelectedCountry(e.target.value)}
                         required
                       >
-                        <option value="Armenia">Armenia</option>
-                        <option value="Indonesia">Indonesia</option>
+                        {/* <option value="Armenia">Armenia</option>
+                        <option value="Indonesia">Indonesia</option> */}
+                        {nationalitys.map((nationality) => (
+                          <option
+                            key={nationality.nas_id}
+                            value={nationality.nas_id}
+                          >
+                            {nationality.nas_country}
+                          </option>
+                        ))}
                       </select>
 
                       {/* <input
@@ -312,7 +545,7 @@ const PaymentPage = () => {
             <div className="accordion-body opacity-100 ">
               <div className="table-responsive">
                 <table className="table">
-                  <thead className="table-dark text-white">
+                  <thead style={{ background: "#297cbb", color: "white" }}>
                     <tr>
                       <th scope="col">#</th>
                       <th scope="col">Name</th>
@@ -322,21 +555,25 @@ const PaymentPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>laila</td>
-                      <td>20</td>
-                      <td>female</td>
-                      <td>Indonesia</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>lili</td>
-                      <td>18</td>
-                      <td>female</td>
-                      <td>Indonesia</td>
-                    </tr>
-                  </tbody>
+            {passengerDetails.length > 0 ? (
+              passengerDetails.map((passenger, index) => (
+                <tr key={index}>
+                  <th scope="row">{index + 1}</th>
+                  <td>{passenger.name}</td>
+                  <td>{passenger.age}</td>
+                  <td>{passenger.gender}</td>
+                  <td>{passenger.nationality}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No passenger details found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+
                 </table>
               </div>
             </div>
@@ -448,18 +685,27 @@ const PaymentPage = () => {
             </div>
 
             <div>
-              {isDesktop ? <DekstopPaymentComponent /> : <PaymentComponent />}
+              {/* {isDesktop ? <DekstopPaymentComponent /> : <PaymentComponent />} */}
+              {renderPaymentComponent()}
             </div>
 
             {/* Button checkout */}
             <div className="d-flex justify-content-center mt-4 border-top">
-              <button
+              {/* <button
                 className="btn btn-primary mt-3 fw-bolder px-3"
                 type="submit"
                 style={{ fontSize: "16px", background: "#297cbb" }}
               >
                 Checkout
-              </button>
+              </button> */}
+              <button
+                  className="btn btn-primary mt-3 fw-bolder px-3"
+                  type="button" // Ganti type menjadi "button" untuk mencegah submit form
+                  onClick={handleCheckout} // Panggil fungsi handleCheckout saat tombol diklik
+                  style={{ fontSize: "16px", background: "#297cbb" }}
+                >
+                  Checkout
+                </button>
             </div>
           </div>
         </div>

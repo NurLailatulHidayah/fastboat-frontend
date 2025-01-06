@@ -7,7 +7,7 @@ const PrivacypolicyPage = () => {
       {/* Page Banner */}
       <section
         className="page-banner"
-        style={{ backgroundImage: "url(/image/main-slider/1.jpg)" }}
+        style={{ backgroundImage: "url(/image/main-slider/bg1.jpg)" }}
       >
         <div className="auto-container">
           
@@ -28,7 +28,7 @@ const PrivacypolicyPage = () => {
           <div className="row clearfix">
             <div className="row ">
               <div className="col-md-6 mb-4">
-                <h3 className="section-title text-black font-size-xs-28 font-weight-bold mb-0">
+                <h3 className=" text-black  font-weight-bold mb-0">
                   Privacy Policy Coverage{"  "}
                 </h3>
                 <p className=" justify-text mt-3">
@@ -49,7 +49,7 @@ const PrivacypolicyPage = () => {
                 </p>
               </div>
               <div className="col-md-6 mb-4">
-                <h3 className="section-title text-black font-size-xs-28 font-weight-bold mb-0">
+                <h3 className=" text-black  font-weight-bold mb-0">
                   Information Sharing and Disclosure by Gilitransfers.com{" "}
                 </h3>
                 <p className=" justify-text mt-3">
@@ -81,7 +81,7 @@ const PrivacypolicyPage = () => {
             </div>
             <div className="row 2">
               <div className="col-md-6 mb-4">
-                <h3 className="section-title text-black font-size-xs-28 font-weight-bold mb-0">
+                <h3 className=" text-black  font-weight-bold mb-0">
                   Information Collection and Use by Gilitransfers.com{"   "}
                 </h3>
                 <p className=" justify-text mt-3">
@@ -96,7 +96,7 @@ const PrivacypolicyPage = () => {
                 </p>
               </div>
               <div className="col-md-6 mb-4">
-                <h3 className="section-title text-black font-size-xs-28 font-weight-bold mb-0">
+                <h3 className=" text-black  font-weight-bold mb-0">
                   Changes to this Privacy Policy{" "}
                 </h3>
                 <p className=" justify-text mt-3">

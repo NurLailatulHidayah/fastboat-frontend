@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import api from "../api"; // Pastikan import axios instance
-import { useLocation, useNavigate } from "react-router-dom"; // Import useLocation to get the query parameters
+import api from "../api"; 
+import { useLocation, useNavigate } from "react-router-dom"; 
 import FormFastboatComponent from "../components/FormFastboatComponent";
 import { CurrencyProvider, useCurrency } from "../context/CurrencyContext";
 
 const FastboatSearch = () => {
-  const [departureTrips, setDepartureTrips] = useState([]); // State untuk trip departure
-  const [returnTrips, setReturnTrips] = useState([]); // State untuk trip return
+  // State untuk trip departure
+  const [departureTrips, setDepartureTrips] = useState([]); 
+  // State untuk trip return
+  const [returnTrips, setReturnTrips] = useState([]); 
   const { currency } = useCurrency();
   const [error, setError] = useState(null);
   const location = useLocation();
@@ -15,8 +17,9 @@ const FastboatSearch = () => {
 
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
-  const [hasReturnTrip, setHasReturnTrip] = useState(false); // Cek apakah ada return trip
-  const [direction, setDirection] = useState(""); // State untuk direction
+  // Cek apakah ada return trip
+  const [hasReturnTrip, setHasReturnTrip] = useState(false); 
+  const [direction, setDirection] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
 
@@ -76,7 +79,8 @@ const FastboatSearch = () => {
     // Update URL dengan currency setiap kali currency berubah
     const updateURLWithCurrency = () => {
       const searchParams = new URLSearchParams(location.search);
-      searchParams.set("currency", currency.cy_code); // Update currency di URL
+      // Update currency di URL
+      searchParams.set("currency", currency.cy_code); 
       navigate(`${location.pathname}?${searchParams.toString()}`, {
         replace: true,
       });
@@ -110,7 +114,8 @@ const FastboatSearch = () => {
     };
 
     updateURLWithCurrency();
-    fetchDataAvailable(); // Ambil data sesuai currency dan arah trip
+    // Ambil data sesuai currency dan arah trip
+    fetchDataAvailable(); 
   }, [currency, direction, location.search, navigate]);
 
   const handleBookingClick = (trip) => {
@@ -125,6 +130,7 @@ const FastboatSearch = () => {
       returnDate,
       currencyCode,
       selectedDeparture: trip,
+      selectedReturn: trip,
       // fbo_pickups: trip.fbo_pickups, 
       // fbo_dropoffs: trip.fbo_dropoffs, 
     });
@@ -144,21 +150,24 @@ const FastboatSearch = () => {
             direction,
             adult,
             child,
-            infant, // Data penumpang
+            infant, 
             departureDate,
-            selectedDeparture: trip, // Trip yang dipilih untuk departure
+            selectedDeparture: trip, 
             currencyCode,
             // fbo_pickups: trip.fbo_pickups, 
             // fbo_dropoffs: trip.fbo_dropoffs, 
           },
         }
       );
+
     } else if (direction === "round_trip") {
       // Jika round_trip, cek apakah trip departure sudah dipilih
       if (!selectedDeparture) {
-        setSelectedDeparture(trip); // Set trip departure yang dipilih
+        // Set trip departure yang dipilih
+        setSelectedDeparture(trip); 
       } else if (selectedDeparture && hasReturnTrip) {
-        setSelectedReturn(trip); // Set trip return yang dipilih
+        // Set trip return yang dipilih
+        setSelectedReturn(trip); 
         navigate(
           `/booking?departure_date=${encodeURIComponent(
             departureDate
@@ -172,8 +181,8 @@ const FastboatSearch = () => {
               direction,
               adult,
               child,
-              infant, // Data penumpang
-              selectedDeparture, // Trip yang dipilih untuk departure
+              infant, 
+              selectedDeparture, 
               selectedReturn: trip,
               departureDate,
               returnDate,
@@ -225,7 +234,7 @@ const FastboatSearch = () => {
       {/* Page Banner */}
       <section
         className="page-banner"
-        style={{ backgroundImage: "url(/image/main-slider/1.jpg)" }}
+        style={{ backgroundImage: "url(/image/main-slider/bg1.jpg)" }}
       >
         <div className="auto-container text-center">
           <h2>Enjoy the Best Sea Journey with Our Fastboat</h2>
@@ -396,7 +405,8 @@ const FastboatSearch = () => {
                     {!selectedDeparture &&
                       departureTrips.length > 0 &&
                       departureTrips
-                        .filter((trip) => trip.fbt_recom === 1) // Filter trip yang direcommendasikan.
+                      // Filter trip yang direcommendasikan.
+                        .filter((trip) => trip.fbt_recom === 1) 
                         .map((trip, index) => (
                           <div
                             className="fastboat-search border rounded-3"
@@ -424,8 +434,8 @@ const FastboatSearch = () => {
                                   </div>
                                 )}
                               </div>
-                              <div className="col-lg-4 comfort-section">
-                                <ul className="image-carousel owl-carousel owl-theme">
+                              <div className="col-lg-3 ">
+                                <ul className="">
                                   <li>
                                     <div className="d-flex align-items-center">
                                       <img
@@ -525,8 +535,8 @@ const FastboatSearch = () => {
                                   </div>
                                 )}
                               </div>
-                              <div className="col-lg-4 comfort-section">
-                                <ul className="image-carousel owl-carousel owl-theme">
+                              <div className="col-lg-3 ">
+                                <ul className="">
                                   <li>
                                     <div className="d-flex align-items-center">
                                       <img

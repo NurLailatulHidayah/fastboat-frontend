@@ -14,7 +14,7 @@ const TermConditions = () => {
       {/* Page Banner */}
       <section
         className="page-banner"
-        style={{ backgroundImage: "url(/image/main-slider/1.jpg)" }}
+        style={{ backgroundImage: "url(/image/main-slider/bg1.jpg)" }}
       >
         <div className="auto-container">
           <h1 className="page-banner_title fade-in-top">Term and Conditions</h1>
