@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Select from "react-select";
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
@@ -319,8 +320,9 @@ const FormFastboatComponent = () => {
             <div className="col-md-2">
               <button
                 type="submit"
-                className="btn btn-primary"
-                style={{ width: "100%" }}
+                className="btn  "
+                style={{ width: "100%", backgroundColor: isFormSubmitted ? "#f7c862" : "#297cbb", // Ubah warna berdasarkan state
+                  color: isFormSubmitted ? "black" : "white", }}
               >
                 {isFormSubmitted ? "Update" : "Search"}
               </button>

@@ -68,9 +68,11 @@ const FastboatPage = () => {
               </div>
             </div>
           </div>
+          
           <div>
             <ScrollTopButtonComponent />
           </div>
+
           <div className="projects-one_filters d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap gap-2 gap-md-5"></div>
           {/* Pass the displayLimit as a prop */}
           <GaleryFasboatComponent

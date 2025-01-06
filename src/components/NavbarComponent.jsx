@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import { CurrencyProvider, useCurrency } from "./CurrencyContext";
-import { CurrencyProvider, useCurrency } from "../context/CurrencyContext";
+import { useCurrency } from "../context/CurrencyContext";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const NavbarComponent = () => {
+  const { pathname } = useLocation();
   const [active, setActive] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -42,11 +44,13 @@ const NavbarComponent = () => {
     // Fungsi untuk mengambil data currency
     const fetchCurrencies = async () => {
       try {
-        const response = await api.get('/api/currency');
-        
+        const response = await api.get("/api/currency");
+
         // Periksa apakah data ada, lalu filter currency yang aktif
         if (response.data && response.data.data) {
-          const activeCurrencies = response.data.data.filter(cur => cur.cy_status === 1);
+          const activeCurrencies = response.data.data.filter(
+            (cur) => cur.cy_status === 1
+          );
           setCurrencies(activeCurrencies);
         }
       } catch (error) {
@@ -61,7 +65,7 @@ const NavbarComponent = () => {
 
   const handleCurrencyChange = (event) => {
     const newCurrency = event.target.value;
-    updateCurrency(newCurrency);  // Update globally
+    updateCurrency(newCurrency); // Update globally
   };
 
   // if (loading) {
@@ -84,55 +88,35 @@ const NavbarComponent = () => {
                     style={{ width: "225px", height: "auto" }}
                   />
                 </Link>
-                <Link to="/" className="logo_sticky">
-                  <img src="logo_title.png" alt="img" />
-                </Link>
               </div>
               <div className="mainnav d-none d-lg-block">
                 <ul className={isOpen ? "mr_menu" : "main_menu"}>
                   <li className={`main_menu ${isActive("/")}`}>
                     <Link to="/">Home</Link>
                   </li>
-                  {/* <li className={`main_menu ${isActive("/fast-boat")}`}>
-                    <Link to="/fast-boat">Fast Boat</Link>
-                  </li>
-                  <li className={`main_menu ${isActive("/trip")}`}>
-                    <Link to="/trip">Tour</Link>
-                  </li> */}
+
                   <li className={`main_menu ${isActive("/blogs")}`}>
                     <Link to="/blogs">Blogs</Link>
                   </li>
-                  {/* <li className={`main_menu ${isActive("/about")}`}>
-                    <Link to="/about">About Us</Link>
-                  </li> */}
+
                   <li className={`main_menu ${isActive("/contact")}`}>
                     <Link to="/contact">Contact Us</Link>
                   </li>
                   <li className="main_menu">
-                    <select
-                      value={currency.cy_code} // Controlled by context
-                      // onChange={(e) => setCurrency(e.target.value)}
-                      onChange={handleCurrencyChange}
-                      className="form-select"
-                      // id="currency"
-                      required
-                    >
-                      {/* {currencies.map((currency) => (
-                        <option key={currency.cy_id} value={currency.cy_code}>
-                          {currency.cy_code}
-                        </option>
-                      ))} */}
-                      {/* {currencies.map((curr) => (
-                        <option key={curr.cy_code} value={curr.cy_code}>
-                          {curr.cy_code}
-                        </option>
-                      ))} */}
-                      {currencies.map((cur) => (
-                        <option key={cur.cy_code} value={cur.cy_code}>
-                           {cur.cy_code}
-                        </option>
-                      ))}
-                    </select>
+                    {!pathname.includes("/payment") && ( // Tampilkan dropdown hanya jika bukan di halaman payment
+                      <select
+                        value={currency.cy_code}
+                        onChange={handleCurrencyChange}
+                        className="form-select"
+                        required
+                      >
+                        {currencies.map((cur) => (
+                          <option key={cur.cy_code} value={cur.cy_code}>
+                            {cur.cy_code}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </li>
                 </ul>
               </div>
@@ -148,60 +132,59 @@ const NavbarComponent = () => {
       </header>
       <div>
         {/* Sticky/Fixed Nav */}
-        <div className="fixed_menu w-200">
-          <header className="header header_style_one" />
-        </div>
-        {/* Mobile Responsive Menu */}
-        <div className={`mr_menu d-lg-none ${isOpen ? "open" : ""}`}>
-          <button type="button" className="mr_menu_close" onClick={toggleMenu}>
-            <i className="fa fa-times" />
-          </button>
-          <div className="logo"></div>
-          <div className="mr_navmenu">
-            <ul>
+        {/* OffCanvas Menu */}
+        <div
+          className={`offcanvas offcanvas-end ${isOpen ? "show" : ""}`}
+          tabIndex="-1"
+          id="offcanvasNavbar"
+          style={{ visibility: isOpen ? "visible" : "hidden" }}
+        >
+          <div className="offcanvas-header">
+          <Link to="/" className="logo_sticky">
+                <img src="logo_title.png" alt="img" />
+              </Link>
+            {/* <h5 className="offcanvas-title">
+              
+            </h5> */}
+            <button
+              type="button"
+              className="btn-close"
+              onClick={toggleMenu}
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
               <li className={`main_menu ${isActive("/")}`}>
-                <Link to="/" onClick={toggleMenu}>
+                <Link to="/" className="nav-link" onClick={toggleMenu}>
                   Home
                 </Link>
               </li>
-              {/* <li className={`main_menu ${isActive("/fast-boat")}`}>
-                <Link to="/fast-boat" onClick={toggleMenu}>
-                  Fast Boat
-                </Link>
-              </li>
-              <li className={`main_menu ${isActive("/trip")}`}>
-                <Link to="/trip" onClick={toggleMenu}>
-                  Tour
-                </Link>
-              </li> */}
-              <li className={`main_menu ${isActive("/blogs")}`}>
-                <Link to="/blogs" onClick={toggleMenu}>
+              <li
+                className={`nav-item ${
+                  location.pathname === "/blogs" ? "active" : ""
+                }`}
+              >
+                <Link to="/blogs" className="nav-link" onClick={toggleMenu}>
                   Blog
                 </Link>
               </li>
-              {/* <li className={`main_menu ${isActive("/about")}`}>
-                <Link to="/about" onClick={toggleMenu}>
-                  About Us
-                </Link>
-              </li> */}
-              <li className={`main_menu ${isActive("/contact")}`}>
-                <Link to="/contact" onClick={toggleMenu}>
+              <li
+                className={`nav-item ${
+                  location.pathname === "/contact" ? "active" : ""
+                }`}
+              >
+                <Link to="/contact" className="nav-link" onClick={toggleMenu}>
                   Contact Us
                 </Link>
               </li>
-              <li className="main_menu">
-                <select
-                  defaultValue="4"
-                  className="form-select"
-                  id="currency-mobile"
-                  required
-                >
-                  <option value="1">AUD</option>
-                  <option value="2">EUR</option>
-                  <option value="3">GBP</option>
-                  <option value="4">IDR</option>
-                  <option value="5">SGD</option>
-                  <option value="6">USD</option>
+              <li className="nav-item mt-2">
+                <select className="form-select" required>
+                  {currencies.map((cur) => (
+                    <option key={cur.cy_code} value={cur.cy_code}>
+                      {cur.cy_code}
+                    </option>
+                  ))}
                 </select>
               </li>
             </ul>

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const GaleryFasboatComponent = ({ searchTerm, limit }) => {
   const [fastboats, setFastboats] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetching data fastboat
   const fetchDataFastboat = async () => {
@@ -23,6 +24,8 @@ const GaleryFasboatComponent = ({ searchTerm, limit }) => {
       } else {
         setError("Tidak dapat terhubung ke server.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,10 +44,35 @@ const GaleryFasboatComponent = ({ searchTerm, limit }) => {
     )
     .slice(0, limit); // Gunakan slice untuk membatasi jumlah data
 
+  // Skeleton loader untuk pengalaman loading
+  const SkeletonLoader = () => (
+    <div className="col">
+      <div className="location-block_one-inner border p-3">
+        <div
+          className="skeleton-image mb-3"
+          style={{ height: "150px", backgroundColor: "#e0e0e0" }}
+        />
+        <div
+          className="skeleton-title mb-2"
+          style={{ height: "20px", width: "60%", backgroundColor: "#e0e0e0" }}
+        />
+        <div
+          className="skeleton-content"
+          style={{ height: "15px", width: "80%", backgroundColor: "#e0e0e0" }}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="mixitup-gallery">
       <div className="filter-list row row-cols-1 row-cols-md-4 g-4 mt-3">
-        {error ? (
+        {loading ? (
+          // Render skeleton loader saat loading
+          Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonLoader key={index} />
+          ))
+        ) : error ? (
           <div className="alert alert-danger mb-0">{error}</div>
         ) : filteredFastboats.length > 0 ? (
           filteredFastboats.map((fastboat, index) => (
@@ -84,56 +112,57 @@ const GaleryFasboatComponent = ({ searchTerm, limit }) => {
             </div>
           ))
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-            <radialGradient
-              id="a11"
-              cx=".66"
-              fx=".66"
-              cy=".3125"
-              fy=".3125"
-              gradientTransform="scale(1.5)"
-            >
-              <stop offset={0} stopColor="#8CB2FF" />
-              <stop offset=".3" stopColor="#8CB2FF" stopOpacity=".9" />
-              <stop offset=".6" stopColor="#8CB2FF" stopOpacity=".6" />
-              <stop offset=".8" stopColor="#8CB2FF" stopOpacity=".3" />
-              <stop offset={1} stopColor="#8CB2FF" stopOpacity={0} />
-            </radialGradient>
-            <circle
-              transform-origin="center"
-              fill="none"
-              stroke="url(#a11)"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeDasharray="200 1000"
-              strokeDashoffset={0}
-              cx={100}
-              cy={100}
-              r={5}
-            >
-              <animateTransform
-                type="rotate"
-                attributeName="transform"
-                calcMode="spline"
-                dur="1.4"
-                values="360;0"
-                keyTimes="0;1"
-                keySplines="0 0 1 1"
-                repeatCount="indefinite"
-              />
-            </circle>
-            <circle
-              transform-origin="center"
-              fill="none"
-              opacity=".2"
-              stroke="#8CB2FF"
-              strokeWidth={2}
-              strokeLinecap="round"
-              cx={100}
-              cy={100}
-              r={5}
-            />
-          </svg>
+          // <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+          //   <radialGradient
+          //     id="a11"
+          //     cx=".66"
+          //     fx=".66"
+          //     cy=".3125"
+          //     fy=".3125"
+          //     gradientTransform="scale(1.5)"
+          //   >
+          //     <stop offset={0} stopColor="#8CB2FF" />
+          //     <stop offset=".3" stopColor="#8CB2FF" stopOpacity=".9" />
+          //     <stop offset=".6" stopColor="#8CB2FF" stopOpacity=".6" />
+          //     <stop offset=".8" stopColor="#8CB2FF" stopOpacity=".3" />
+          //     <stop offset={1} stopColor="#8CB2FF" stopOpacity={0} />
+          //   </radialGradient>
+          //   <circle
+          //     transform-origin="center"
+          //     fill="none"
+          //     stroke="url(#a11)"
+          //     strokeWidth={2}
+          //     strokeLinecap="round"
+          //     strokeDasharray="200 1000"
+          //     strokeDashoffset={0}
+          //     cx={100}
+          //     cy={100}
+          //     r={5}
+          //   >
+          //     <animateTransform
+          //       type="rotate"
+          //       attributeName="transform"
+          //       calcMode="spline"
+          //       dur="1.4"
+          //       values="360;0"
+          //       keyTimes="0;1"
+          //       keySplines="0 0 1 1"
+          //       repeatCount="indefinite"
+          //     />
+          //   </circle>
+          //   <circle
+          //     transform-origin="center"
+          //     fill="none"
+          //     opacity=".2"
+          //     stroke="#8CB2FF"
+          //     strokeWidth={2}
+          //     strokeLinecap="round"
+          //     cx={100}
+          //     cy={100}
+          //     r={5}
+          //   />
+          // </svg>
+          <p className="text-center">Fastboat tidak ditemukan.</p>
         )}
       </div>
     </div>

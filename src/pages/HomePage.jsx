@@ -4,9 +4,10 @@ import BenefitComponent from "../components/BenefitComponent";
 import FormFastboatComponent from "../components/FormFastboatComponent";
 import GaleryFasboatComponent from "../components/GaleryFasboatComponent";
 import ScrollTopButtonComponent from "../components/ScrollTopButtonComponent";
-import GaleryTourComponent from "../components/GaleryTourComponent";
+// import GaleryTourComponent from "../components/GaleryTourComponent";
 import GaleryIslandComponent from "../components/GaleryIslandComponent";
 import SupportComponent from "../components/SupportComponent";
+import GaleryRouteComponent from "../components/GaleryRouteComponent";
 
 const HomePage = () => {
   return (
@@ -98,7 +99,8 @@ const HomePage = () => {
             <div className="mt-5 opacity-75" style={{ fontSize: "20px" }}>
               Bali, Gili Island, Nusa Penida, Nusa Lembongan and Lombok
             </div>
-            <div
+            <GaleryRouteComponent/>
+            {/* <div
               className=" text-center mt-5 opacity-75"
               style={{ fontSize: "16px", textDecoration: "line" }}
             >
@@ -137,77 +139,14 @@ const HomePage = () => {
                   <div>Amed to Gili Island and Lombok</div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
       {/* End Fastboat Routes */}
 
-      {/* Best Tour and Activities */}
-      <section className="gallery-one">
-        <div className="auto-container">
-          {/* Sec Title Two */}
-          <div className="sec-title_two">
-            <div className="bid-title">TOUR</div>
-            <div className="title">Best Tour and Activities</div>
-            {/* <h6 className="font-size-17 mt-0 text-secondary font-weight-normal">
-              Delivering unforgettable holiday experiences and ensuring every
-              trip is an adventure of a lifetime.
-            </h6> */}
-          </div>
-          {/* MixitUp Galery */}
-          <div className="mixitup-gallery">
-            <div className="filter-list ">
-              {/* Galery Tour */}
-              <GaleryTourComponent />
-              {/* End Galery Tour */}
-
-              {/* Location Block One */}
-              {/* <div className="location-block_one  all nature city col-lg-3 col-md-6 col-sm-6">
-                <div className="location-block_one-inner">
-                  <div className="location-block_one-image">
-                    <a href="#">
-                      <img
-                        src="/image/tour_activies/bali-atv-ride-single-tandem.jpg"
-                        alt="aman dia cruise"
-                      />
-                    </a>
-                  </div>
-                  <div className="location-block_one-content">
-                    <h5 className="location-block_one-heading">
-                      <a href="#">
-                        Kuber Bali ATV Ride Adventure - Tandem 1.5 Hours
-                      </a>
-                    </h5>
-                    <div className="location-block_one ">
-                      Complete your adventure with Wanderlust Cruise from Bali
-                      to Gili Island and Penida to Gili with a direct boat. Get
-                      the best tickets price with Gilitransfers
-                    </div>
-                    <a
-                      className="location-block_one-arrow flaticon-next-2"
-                      href="#"
-                    />
-                  </div>
-                </div>
-              </div> */}
-            </div>
-            {/* Button Box */}
-            <div className="button-box text-center">
-              <a className="btn-style-three theme-btn" href="/fastboat">
-                <div className="btn-wrap">
-                  <span className="text-one">See more Tour and Activities</span>
-                  <span className="text-two">See more Tour and Activities</span>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* End Best Tour and Activities */}
-
       {/* Top Island */}
-      <section className="gallery-one">
+      <section className="gallery-one-island">
         <div className="auto-container">
           {/* Sec Title Two */}
           <div className="sec-title_two">
@@ -215,12 +154,12 @@ const HomePage = () => {
             <div className="title">Top Island</div>
           </div>
           {/* MixitUp Galery */}
-          <div className="mixitup-gallery">
-            <div className="filter-list mt-4 mb-3">
+          {/* <div className="mixitup-gallery"> */}
+            {/* <div className="filter-list mt-4 mb-3"> */}
               {/* Galery Island */}
-              <GaleryIslandComponent />
+              <GaleryIslandComponent limit={4}/>
               {/* End Galery Island */}
-            </div>
+            {/* </div> */}
             {/* Button Box */}
             <div className="button-box text-center">
               <a className="btn-style-three theme-btn" href="/fastboat">
@@ -230,7 +169,7 @@ const HomePage = () => {
                 </div>
               </a>
             </div>
-          </div>
+          {/* </div> */}
         </div>
       </section>
       {/* End Top Island */}

@@ -56,7 +56,7 @@ const BlogsDetailPage = () => {
                               The Serene Adventure : From Ubud to Gili
                               Trawangan!
                             </h3>
-                            <div className="post-widget_block-image col-lg-12 mt-3">
+                            <div className="col-lg-12 mt-3">
                               <a href="/blogs-details">
                                 <img
                                   src="image/blogs/blog-the-serene-adventure-from-ubud-to-gili-trawangan.jpg"

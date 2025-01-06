@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../api"; // Pastikan import axios instance
 import "bootstrap/dist/css/bootstrap.min.css";
 import PaymentComponent from "../components/PaymentComponent";
-import { useLocation } from "react-router-dom"; // Import useLocation to get the query
+import { useLocation, useNavigate } from "react-router-dom"; // Import useLocation to get the query
 import { CurrencyProvider, useCurrency } from "../context/CurrencyContext";
 
 const BookingPage = () => {
   const [nationalitys, setNationalitys] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState("Indonesia");
+  const [selectedCountry, setSelectedCountry] = useState("102");
+  const [passengerCountry, setPassengerCountry] = useState("102");
   const [validated, setValidated] = useState(false);
+  const paymentRef = useRef(null);
+  const [validationError, setValidationError] = useState(false);
+  const navigate = useNavigate();
   // const { currency } = useCurrency();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,8 +28,19 @@ const BookingPage = () => {
       const indonesia = nationalityData.find(
         (nationality) => nationality.nas_country === "Indonesia"
       );
+      // if (indonesia) {
+      //   setSelectedCountry(indonesia.nas_id);
+
+      // }
       if (indonesia) {
         setSelectedCountry(indonesia.nas_id);
+        // Set default nationality for each passenger
+        setPassengers((prevPassengers) =>
+          prevPassengers.map((passenger) => ({
+            ...passenger,
+            nationality: indonesia.nas_id,
+          }))
+        );
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -53,6 +68,7 @@ const BookingPage = () => {
     returnDate,
     selectedDeparture,
     selectedReturn,
+    currencyCode,
     // currency,
   } = location.state || {};
 
@@ -123,7 +139,7 @@ const BookingPage = () => {
     return numericAmount ? numericAmount.toLocaleString("id-ID") : " 0 ";
   };
 
-  const { currency, setCurrency } = useCurrency(CurrencyProvider); // Access currency context
+  // const { currency, setCurrency } = useCurrency(CurrencyProvider); // Access currency context
 
   useEffect(() => {
     localStorage.removeItem("selectedMethod");
@@ -172,446 +188,420 @@ const BookingPage = () => {
 
   const total = departureSubtotal + returnSubtotal;
 
+  // Update passenger data when a form field changes
+  const handlePassengerChange = (index, type, field, value) => {
+    setPassengers((prevPassengers) => {
+      const updatedPassengers = [...prevPassengers];
+      // Ensure the array has enough objects for each passenger
+      if (!updatedPassengers[index]) {
+        updatedPassengers[index] = {
+          type,
+          name: "",
+          age: "",
+          gender: "",
+          nationality: " ",
+        };
+      }
+      updatedPassengers[index][field] = value;
+      return updatedPassengers;
+    });
+  };
+
   // Generate form for each passenger type
-  const renderPassengerForms = (count, type) => {
-    return Array.from({ length: count }).map((_, index) => (
-      <div
-        key={`${type}-${index}`}
-        className="row g-4 needs-validation mt-3 mb-3"
-        noValidate
-      >
-        <h4
-          className="opacity-75 mt-2"
-          style={{
-            fontFamily: "Poppins",
-            fontSize: "22px",
-            fontWeight: "bold",
-          }}
+  const renderPassengerForms = (count, type, offset) => {
+    return Array.from({ length: count }).map((_, index) => {
+      const globalIndex = offset + index; // Tambahkan offset untuk membedakan indeks antar tipe
+      return (
+        <div
+          key={`${type}-${index}`}
+          className="row g-4 needs-validation mt-3 mb-3"
+          noValidate
         >
-          {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1}
-        </h4>
-        <div className="col-md-6">
-          <label htmlFor={`${type}${index + 1}Name`} className="form-label">
-            {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Name{" "}
-            <span>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control py-2"
-            id={`${type}${index + 1}Name`}
-            placeholder={`${type.charAt(0).toUpperCase() + type.slice(1)}-${
-              index + 1
-            } name`}
-            required
-          />
-          <div className="valid-feedback">Looks good!</div>
-          <div className="invalid-feedback">Please provide a valid name.</div>
-        </div>
-        <div className="col-md-6">
-          <label htmlFor={`${type}${index + 1}Age`} className="form-label">
-            {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Age
-            (years) <span>*</span>
-          </label>
-          <select
-            className="form-select py-2"
-            id={`${type}${index + 1}Age`}
-            required
+          <h4
+            className="opacity-75 mt-2"
+            style={{
+              fontFamily: "Poppins",
+              fontSize: "22px",
+              fontWeight: "bold",
+            }}
           >
-            {type === "adult" && (
-              // Adult age range (13 to 65+)
-              <>
-                {[...Array(53)].map((_, i) => (
-                  <option key={i} value={i + 13}>
-                    {i + 13}
+            {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1}
+          </h4>
+          <div className="col-md-6">
+            <label htmlFor={`${type}${index + 1}Name`} className="form-label">
+              {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Name{" "}
+              <span>*</span>
+            </label>
+            <input
+              type="text"
+              className="form-control py-2"
+              id={`${type}${index + 1}Name`}
+              onChange={(e) =>
+                handlePassengerChange(globalIndex, type, "name", e.target.value)
+              }
+              placeholder={`${type.charAt(0).toUpperCase() + type.slice(1)}-${
+                index + 1
+              } name`}
+              required
+            />
+            <div className="valid-feedback">Looks good!</div>
+            <div className="invalid-feedback">Please provide a valid name.</div>
+          </div>
+          <div className="col-md-6">
+            <label htmlFor={`${type}${index + 1}Age`} className="form-label">
+              {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Age
+              (years) <span>*</span>
+            </label>
+            <select
+              className="form-select py-2"
+              id={`${type}${index + 1}Age`}
+              onChange={(e) =>
+                handlePassengerChange(globalIndex, type, "age", e.target.value)
+              }
+              required
+            >
+              {type === "adult" && (
+                // Adult age range (13 to 65+)
+                <>
+                  {[...Array(53)].map((_, i) => (
+                    <option key={i} value={i + 13}>
+                      {i + 13}
+                    </option>
+                  ))}
+                  <option value="65+">65+</option>
+                </>
+              )}
+              {type === "child" &&
+                // Child age range (3 to 12)
+                [...Array(10)].map((_, i) => (
+                  <option key={i} value={i + 3}>
+                    {i + 3}
                   </option>
                 ))}
-                <option value="65+">65+</option>
-              </>
-            )}
-            {type === "child" &&
-              // Child age range (3 to 12)
-              [...Array(10)].map((_, i) => (
-                <option key={i} value={i + 3}>
-                  {i + 3}
-                </option>
-              ))}
-            {type === "infant" &&
-              // Infant age range (0 to 2)
-              [...Array(3)].map((_, i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-          </select>
-          <div className="invalid-feedback">Please select a valid age.</div>
-        </div>
+              {type === "infant" &&
+                // Infant age range (0 to 2)
+                [...Array(3)].map((_, i) => (
+                  <option key={i} value={i}>
+                    {i}
+                  </option>
+                ))}
+            </select>
+            <div className="invalid-feedback">Please select a valid age.</div>
+          </div>
 
-        <div className="col-md-6">
-          <label htmlFor={`${type}${index + 1}Gender`} className="form-label">
-            {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Gender{" "}
-            <span>*</span>
-          </label>
-          <select
-            className="form-select py-2 opacity-75"
-            id={`${type}${index + 1}Gender`}
-            required
-            defaultValue="option1"
-          >
-            <option value="option1">Male</option>
-            <option value="option2">Female</option>
-            <option value="option3">Other</option>
-          </select>
-          <div className="invalid-feedback">Please select a valid gender.</div>
-        </div>
-        <div className="col-md-6">
-          <label
-            htmlFor={`${type}${index + 1}Nationality`}
-            className="form-label"
-          >
-            {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1}{" "}
-            Nationality <span>*</span>
-          </label>
-          <select
-            className="form-select py-2 opacity-75"
-            id={`${type}${index + 1}Nationality`}
-            value={selectedCountry}
-            onChange={(e) => setSelectedCountry(e.target.value)}
-            required
-          >
-            {nationalitys.map((nationality) => (
-              <option key={nationality.nas_id} value={nationality.nas_id}>
-                {nationality.nas_country}
-              </option>
-            ))}
-          </select>
-          <div className="invalid-feedback">
-            Please select a valid nationality.
+          <div className="col-md-6">
+            <label htmlFor={`${type}${index + 1}Gender`} className="form-label">
+              {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1} Gender{" "}
+              <span>*</span>
+            </label>
+            <select
+              className="form-select py-2 opacity-75"
+              id={`${type}${index + 1}Gender`}
+              onChange={(e) =>
+                handlePassengerChange(
+                  globalIndex,
+                  type,
+                  "gender",
+                  e.target.value
+                )
+              }
+              required
+              defaultValue="male"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              {/* <option value="option3">Other</option> */}
+            </select>
+            <div className="invalid-feedback">
+              Please select a valid gender.
+            </div>
+          </div>
+          <div className="col-md-6">
+            <label
+              htmlFor={`${type}${index + 1}Nationality`}
+              className="form-label"
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}-{index + 1}{" "}
+              Nationality <span>*</span>
+            </label>
+            <select
+              className="form-select py-2 opacity-75"
+              id={`${type}${index + 1}Nationality`}
+              // value={nationalitys}
+              value={passengers[globalIndex]?.nationality || passengerCountry}
+              // onChange={(e) => setSelectedCountry(e.target.value)}
+              onChange={(e) =>
+                handlePassengerChange(
+                  globalIndex,
+                  type,
+                  "nationality",
+                  e.target.value
+                )
+              }
+              required
+            >
+              {nationalitys.map((nationality) => (
+                <option key={nationality.nas_id} value={nationality.nas_id}>
+                  {nationality.nas_country}
+                </option>
+              ))}
+            </select>
+            <div className="invalid-feedback">
+              Please select a valid nationality.
+            </div>
           </div>
         </div>
-      </div>
-    ));
-  };
-
-  // Post data contact
-  const [contact, setContact] = useState({
-    ctc_name: "",
-    ctc_email: "",
-    ctc_phone: "",
-    ctc_nationality: "",
-  });
-
-  const [tripIds, setTripIds] = useState([]);
-  const [passengers, setPassengers] = useState([
-    { name: "", age: "", gender: "male", nationality: "" },
-  ]);
-
-  // Fungsi untuk handle perubahan pada form contact
-  const handleContactChange = (e) => {
-    const { name, value } = e.target;
-    setContact((prevContact) => ({
-      ...prevContact,
-      [name]: value,
-    }));
-  };
-
-  // Fungsi untuk handle perubahan pada trip IDs
-  const handleTripChange = (e) => {
-    setTripIds(e.target.value.split(",")); // Contoh input trip ID, pisahkan dengan koma
-  };
-
-  // Fungsi untuk handle perubahan pada data penumpang
-  const handlePassengerChange = (index, field, value) => {
-    const newPassengers = [...passengers];
-    newPassengers[index][field] = value;
-    setPassengers(newPassengers);
-  };
-
-  // Fungsi untuk menambahkan penumpang baru
-  const addPassenger = () => {
-    setPassengers([
-      ...passengers,
-      { name: "", age: "", gender: "male", nationality: "" },
-    ]);
-  };
-
-  // Fungsi untuk submit data ke backend
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const dataToSubmit = {
-      contact,
-      trip: { ids: tripIds },
-      passengers,
-    };
-
-    try {
-      const response = await api.post("/api/booking", dataToSubmit);
-      console.log("Response:", response.data);
-      alert("Data berhasil dikirim!");
-    } catch (error) {
-      console.error("Terjadi kesalahan saat mengirim data:", error);
-      alert("Gagal mengirim data. Coba lagi.");
-    }
+      );
+    });
   };
 
   // State untuk menentukan apakah form pickup dan dropoff harus ditampilkan secara terpisah
-const [isDeparturePickupChecked, setIsDeparturePickupChecked] = useState(false);
-const [isDepartureDropoffChecked, setIsDepartureDropoffChecked] = useState(false);
-const [isReturnPickupChecked, setIsReturnPickupChecked] = useState(false);
-const [isReturnDropoffChecked, setIsReturnDropoffChecked] = useState(false);
+  const [isDeparturePickupChecked, setIsDeparturePickupChecked] =
+    useState(false);
+  const [isDepartureDropoffChecked, setIsDepartureDropoffChecked] =
+    useState(false);
+  const [isReturnPickupChecked, setIsReturnPickupChecked] = useState(false);
+  const [isReturnDropoffChecked, setIsReturnDropoffChecked] = useState(false);
 
-// Fungsi untuk meng-handle perubahan checkbox untuk departure dan return
-const handleDeparturePickupChange = () => {
-  setIsDeparturePickupChecked(!isDeparturePickupChecked);
-};
+  // Fungsi untuk meng-handle perubahan checkbox untuk departure dan return
+  const handleDeparturePickupChange = () => {
+    setIsDeparturePickupChecked(!isDeparturePickupChecked);
+  };
 
-const handleDepartureDropoffChange = () => {
-  setIsDepartureDropoffChecked(!isDepartureDropoffChecked);
-};
+  const handleDepartureDropoffChange = () => {
+    setIsDepartureDropoffChecked(!isDepartureDropoffChecked);
+  };
 
-const handleReturnPickupChange = () => {
-  setIsReturnPickupChecked(!isReturnPickupChecked);
-};
+  const handleReturnPickupChange = () => {
+    setIsReturnPickupChecked(!isReturnPickupChecked);
+  };
 
-const handleReturnDropoffChange = () => {
-  setIsReturnDropoffChecked(!isReturnDropoffChecked);
-};
+  const handleReturnDropoffChange = () => {
+    setIsReturnDropoffChecked(!isReturnDropoffChecked);
+  };
 
-  // State untuk menentukan apakah form pickup dan dropoff harus ditampilkan
-  // const [isPickupChecked, setIsPickupChecked] = useState(false);
-  // const [isDropoffChecked, setIsDropoffChecked] = useState(false);
+  //  Departure
+  const [departurePickup, setDeparturePickup] = useState("");
+  const [departurePickupAddress, setDeparturePickupAddress] = useState("");
 
-  // Fungsi untuk meng-handle perubahan checkbox
-  // const handlePickupChange = () => {
-  //   setIsPickupChecked(!isPickupChecked);
-  // };
+  const [departureDropoff, setDepartureDropoff] = useState("");
+  const [departureDropoffAddress, setDepartureDropoffAddress] = useState("");
 
-  // const handleDropoffChange = () => {
-  //   setIsDropoffChecked(!isDropoffChecked);
-  // };
+  // Handler for Departure Pickup change
+  const handlePickupDeptChange = (event) => {
+    const departurePickupId = parseInt(event.target.value);
+    const departurePickup = selectedDeparture.fbo_pickups.find(
+      (pickup) => pickup.id === departurePickupId
+    );
 
-  // const [selectedPickup, setSelectedPickup] = useState(" ");
-  // const [selectedDropoff, setSelectedDropoff] = useState(" ");
+    setDeparturePickup(departurePickupId); // Update departure pickup ID
+    if (
+      selectedDeparture.shuttle_type === "Sharing" &&
+      departurePickup?.pickup_meeting_point
+    ) {
+      setDeparturePickupAddress(departurePickup.pickup_meeting_point); // Update departure pickup address
+    } else {
+      setDeparturePickupAddress("");
+    }
+  };
 
-  // const [pickupLocation, setPickupLocation] = useState(" ");
-  // const [dropoffLocation, setDropoffLocation] = useState(" ");
-  // const [pickupAddress, setPickupAddress] = useState(""); 
-  // const [dropoffAddress, setDropoffAddress] = useState(""); 
+  // Handler for Departure Dropoff change
+  const handleDropoffDeptChange = (event) => {
+    const departureDropoffId = parseInt(event.target.value);
+    const departureDropoff = selectedDeparture.fbo_dropoffs.find(
+      (dropoff) => dropoff.id === departureDropoffId
+    );
 
-  // console.log("Shuttle Type:", selectedDeparture.shuttle_type);
+    setDepartureDropoff(departureDropoffId); // Update departure dropoff ID
+    if (
+      selectedDeparture.shuttle_type === "Sharing" &&
+      departureDropoff?.dropoff_meeting_point
+    ) {
+      setDepartureDropoffAddress(departureDropoff.dropoff_meeting_point); // Update departure dropoff address
+    } else {
+      setDepartureDropoffAddress("");
+    }
+  };
 
-  // const handlePickupDeptChange = (event) => {
-  //   const selectedPickupId = parseInt(event.target.value); 
-  //   console.log("Selected Pickup ID:", selectedPickupId);
+  // Return
+  const [returnPickup, setReturnPickup] = useState("");
+  const [returnPickupAddress, setReturnPickupAddress] = useState("");
 
-  //   const selectedPickup = selectedDeparture.fbo_pickups.find(
-  //     (pickup) => pickup.id === selectedPickupId
-  //   );
-  //   console.log("Pickup selected:", selectedPickup);
+  const [returnDropoff, setReturnDropoff] = useState("");
+  const [returnDropoffAddress, setReturnDropoffAddress] = useState("");
 
-  //   if (selectedDeparture && selectedDeparture.fbo_pickups) {
-  //     console.log("Selected Pickup:", selectedPickup);
-  //     setSelectedPickup(selectedPickupId); 
-  //   } else {
-  //     console.log("Pickup data is not available yet.");
-  //   }
+  // Handler for Return Pickup change
+  const handlePickupReturnChange = (event) => {
+    const returnPickupId = parseInt(event.target.value);
+    const returnPickup = selectedReturn.fbo_pickups.find(
+      (pickup) => pickup.id === returnPickupId
+    );
 
-  //   // Cek shuttle type dan meeting point pickup
-  //   if (
-  //     selectedDeparture.shuttle_type === "Sharing" &&
-  //     selectedPickup?.pickup_meeting_point
-  //   ) {
-  //     setPickupAddress(selectedPickup.pickup_meeting_point);
-  //     console.log(
-  //       "Pickup Address set to:",
-  //       selectedPickup.pickup_meeting_point
-  //     );
-  //   } else {
-  //     setPickupAddress("");
-  //   }
-  // };
+    setReturnPickup(returnPickupId); // Update return pickup ID
+    if (
+      selectedReturn.shuttle_type === "Sharing" &&
+      returnPickup?.pickup_meeting_point
+    ) {
+      setReturnPickupAddress(returnPickup.pickup_meeting_point); // Update return pickup address
+    } else {
+      setReturnPickupAddress("");
+    }
+  };
 
-  // const handleDropoffDeptChange = (event) => {
-  //   const selectedDropoffId = parseInt(event.target.value); // Pastikan nilai yang dikirim ID
-  //   console.log("Selected Dropoff ID:", selectedDropoffId);
+  // Handler for Return Dropoff change
+  const handleDropoffReturnChange = (event) => {
+    const returnDropoffId = parseInt(event.target.value);
+    const returnDropoff = selectedReturn.fbo_dropoffs.find(
+      (dropoff) => dropoff.id === returnDropoffId
+    );
 
-  //   const selectedDropoff = selectedDeparture.fbo_dropoffs.find(
-  //     (dropoff) => dropoff.id === selectedDropoffId
-  //   );
-  //   console.log("Dropoff selected:", selectedDropoff);
+    setReturnDropoff(returnDropoffId); // Update return dropoff ID
+    if (
+      selectedReturn.shuttle_type === "Sharing" &&
+      returnDropoff?.dropoff_meeting_point
+    ) {
+      setReturnDropoffAddress(returnDropoff.dropoff_meeting_point); // Update return dropoff address
+    } else {
+      setReturnDropoffAddress("");
+    }
+  };
 
-  //   if (selectedDeparture && selectedDeparture.fbo_dropoffs) {
-  //     console.log("Selected Dropoff:", selectedDropoff);
-  //     setSelectedDropoff(selectedDropoffId); // Menyimpan ID, bukan nama
-  //   } else {
-  //     console.log("Dropoff data is not available yet.");
-  //   }
-
-  //   // Cek shuttle type dan meeting point dropoff
-  //   if (
-  //     selectedDeparture.shuttle_type === "Sharing" &&
-  //     selectedDropoff?.dropoff_meeting_point
-  //   ) {
-  //     setDropoffAddress(selectedDropoff.dropoff_meeting_point);
-  //     console.log(
-  //       "Dropoff Address set to:",
-  //       selectedDropoff.dropoff_meeting_point
-  //     );
-  //   } else {
-  //     setDropoffAddress("");
-  //   }
-  // };
-  // const handlePickupReturnChange = (event) => {
-  //   const selectedPickupId = parseInt(event.target.value); 
-  //   console.log("Selected Pickup ID:", selectedPickupId);
-
-  //   const selectedPickup = selectedReturn.fbo_pickups.find(
-  //     (pickup) => pickup.id === selectedPickupId
-  //   );
-  //   console.log("Pickup selected:", selectedPickup);
-
-  //   if (selectedReturn && selectedReturn.fbo_pickups) {
-  //     console.log("Selected Pickup:", selectedPickup);
-  //     setSelectedPickup(selectedPickupId); 
-  //   } else {
-  //     console.log("Pickup data is not available yet.");
-  //   }
-
-  //   // Cek shuttle type dan meeting point pickup
-  //   if (
-  //     selectedReturn.shuttle_type === "Sharing" &&
-  //     selectedPickup?.pickup_meeting_point
-  //   ) {
-  //     setPickupAddress(selectedPickup.pickup_meeting_point);
-  //     console.log(
-  //       "Pickup Address set to:",
-  //       selectedPickup.pickup_meeting_point
-  //     );
-  //   } else {
-  //     setPickupAddress("");
-  //   }
-  // };
-
-  // const handleDropoffReturnChange = (event) => {
-  //   const selectedDropoffId = parseInt(event.target.value); // Pastikan nilai yang dikirim ID
-  //   console.log("Selected Dropoff ID:", selectedDropoffId);
-
-  //   const selectedDropoff = selectedReturn.fbo_dropoffs.find(
-  //     (dropoff) => dropoff.id === selectedDropoffId
-  //   );
-  //   console.log("Dropoff selected:", selectedDropoff);
-
-  //   if (selectedReturn && selectedReturn.fbo_dropoffs) {
-  //     console.log("Selected Dropoff:", selectedDropoff);
-  //     setSelectedDropoff(selectedDropoffId); // Menyimpan ID, bukan nama
-  //   } else {
-  //     console.log("Dropoff data is not available yet.");
-  //   }
-
-  //   // Cek shuttle type dan meeting point dropoff
-  //   if (
-  //     selectedReturn.shuttle_type === "Sharing" &&
-  //     selectedDropoff?.dropoff_meeting_point
-  //   ) {
-  //     setDropoffAddress(selectedDropoff.dropoff_meeting_point);
-  //     console.log(
-  //       "Dropoff Address set to:",
-  //       selectedDropoff.dropoff_meeting_point
-  //     );
-  //   } else {
-  //     setDropoffAddress("");
-  //   }
-  // };
-
-  // Function to handle pickup selection
-  // const handlePickupSelection = (pickup) => {
-  //   if (selectedDeparture.shuttle_type === "Sharing" && pickup.pickup_meeting_point) {
-  //     setAddress(pickup.pickup_meeting_point);
-  //   }
-  // };
-
-//  Departure
-const [departurePickup, setDeparturePickup] = useState("");
-const [departurePickupAddress, setDeparturePickupAddress] = useState("");
-
-const [departureDropoff, setDepartureDropoff] = useState("");
-const [departureDropoffAddress, setDepartureDropoffAddress] = useState("");
-
-// Handler for Departure Pickup change
-const handlePickupDeptChange = (event) => {
-  const departurePickupId = parseInt(event.target.value);
-  const departurePickup = selectedDeparture.fbo_pickups.find(
-    (pickup) => pickup.id === departurePickupId
+  const [contactName, setName] = useState("");
+  const [contactEmail, setEmail] = useState("");
+  const [contactPhone, setPhone] = useState("");
+  const [tripIds, setTripIds] = useState([]);
+  const [passengers, setPassengers] = useState(
+    // [{ name: "", age: "", gender: "", nationality: " " }],
+    [{ type: "adult", name: "", age: "13", gender: "", nationality: "" }],
+    [{ type: "child", name: "", age: "3", gender: "", nationality: "" }]
   );
+  console.log("Passengers data:", passengers);
 
-  setDeparturePickup(departurePickupId); // Update departure pickup ID
-  if (selectedDeparture.shuttle_type === "Sharing" && departurePickup?.pickup_meeting_point) {
-    setDeparturePickupAddress(departurePickup.pickup_meeting_point); // Update departure pickup address
-  } else {
-    setDeparturePickupAddress("");
-  }
-};
+  // Fungsi untuk memvalidasi dan mengonversi gender ke "male" atau "female"
+  const validateGender = (gender) => {
+    return gender === "male" || gender === "female" ? gender : ""; // Mengembalikan string kosong jika nilai gender tidak valid
+  };
 
-// Handler for Departure Dropoff change
-const handleDropoffDeptChange = (event) => {
-  const departureDropoffId = parseInt(event.target.value);
-  const departureDropoff = selectedDeparture.fbo_dropoffs.find(
-    (dropoff) => dropoff.id === departureDropoffId
-  );
+  // const currency = { code: "IDR" };
+  // const [checkinPoint, setCheckinPoint] = useState("");
 
-  setDepartureDropoff(departureDropoffId); // Update departure dropoff ID
-  if (selectedDeparture.shuttle_type === "Sharing" && departureDropoff?.dropoff_meeting_point) {
-    setDepartureDropoffAddress(departureDropoff.dropoff_meeting_point); // Update departure dropoff address
-  } else {
-    setDepartureDropoffAddress("");
-  }
-};
+  const bookingData = async () => {
+    const formData = new FormData();
+    formData.append("contact[ctc_name]", contactName);
+    formData.append("contact[ctc_email]", contactEmail);
+    formData.append("contact[ctc_phone]", contactPhone);
+    formData.append("contact[ctc_nationality]", selectedCountry);
 
+    // Menambahkan trip.ids
+    tripIds.forEach((id, index) => {
+      formData.append(`trip[ids][${index}]`, id);
+    });
 
-// Return
-const [returnPickup, setReturnPickup] = useState("");
-const [returnPickupAddress, setReturnPickupAddress] = useState("");
+    // Menambahkan data penumpang
+    passengers.forEach((passenger, index) => {
+      formData.append(`passengers[${index}][name]`, passenger.name);
+      formData.append(`passengers[${index}][age]`, passenger.age);
+      formData.append(
+        `passengers[${index}][gender]`,
+        validateGender(passenger.gender) || "male"
+      );
+      formData.append(
+        `passengers[${index}][nationality]`,
+        passenger.nationality || passengerCountry
+      );
+    });
 
-const [returnDropoff, setReturnDropoff] = useState("");
-const [returnDropoffAddress, setReturnDropoffAddress] = useState("");
-  
-// Handler for Return Pickup change
-const handlePickupReturnChange = (event) => {
-  const returnPickupId = parseInt(event.target.value);
-  const returnPickup = selectedReturn.fbo_pickups.find(
-    (pickup) => pickup.id === returnPickupId
-  );
+    // Pastikan tripIds diisi dengan benar
+    if (selectedDeparture?.fba_id) {
+      formData.append(`trip[ids][]`, selectedDeparture.fba_id);
+    }
+    if (selectedReturn?.fba_id) {
+      formData.append(`trip[ids][]`, selectedReturn.fba_id);
+    }
 
-  setReturnPickup(returnPickupId); // Update return pickup ID
-  if (selectedReturn.shuttle_type === "Sharing" && returnPickup?.pickup_meeting_point) {
-    setReturnPickupAddress(returnPickup.pickup_meeting_point); // Update return pickup address
-  } else {
-    setReturnPickupAddress("");
-  }
-};
+    // Menambahkan currency
+    formData.append("currency[code]", currencyCode);
 
-// Handler for Return Dropoff change
-const handleDropoffReturnChange = (event) => {
-  const returnDropoffId = parseInt(event.target.value);
-  const returnDropoff = selectedReturn.fbo_dropoffs.find(
-    (dropoff) => dropoff.id === returnDropoffId
-  );
+    // Menambahkan fbo_checkin_point
+    // formData.append("fbo_checkin_point", checkinPoint);
 
-  setReturnDropoff(returnDropoffId); // Update return dropoff ID
-  if (selectedReturn.shuttle_type === "Sharing" && returnDropoff?.dropoff_meeting_point) {
-    setReturnDropoffAddress(returnDropoff.dropoff_meeting_point); // Update return dropoff address
-  } else {
-    setReturnDropoffAddress("");
-  }
-};
+    // Menambahkan data perjalanan keberangkatan (departure)
+    formData.append("departure[pickup]", departurePickup);
+    formData.append("departure[dropoff]", departureDropoff);
+    formData.append("departure[pickupAddress]", departurePickupAddress);
+    formData.append("departure[dropoffAddress]", departureDropoffAddress);
+
+    // Menambahkan data perjalanan kembali (return)
+    formData.append("return[pickup]", returnPickup);
+    formData.append("return[dropoff]", returnDropoff);
+    formData.append("return[pickupAddress]", returnPickupAddress);
+    formData.append("return[dropoffAddress]", returnDropoffAddress);
+
+    // Kirim data ke API
+    try {
+      const response = await api.post("/api/booking", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Respons dari API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error during booking:",
+        error.response?.data || error.message
+      );
+      throw error; // Pastikan untuk melempar error agar bisa ditangani di handleSubmit
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validasi pembayaran
+    const isValidPayment = paymentRef.current.validate();
+    if (!isValidPayment) {
+      setValidationError(true);
+      return;
+    }
+    setValidationError(false);
+
+    console.log("Booking submitted!");
+
+    try {
+      const response = await bookingData();
+
+      if (response?.orderId) {
+        const orderId = response.orderId;
+        console.log("Booking berhasil untuk keberangkatan:", orderId);
+
+        if (response?.return) {
+          console.log(
+            "Booking berhasil untuk perjalanan kembali:",
+            response.return
+          );
+        }
+
+        // Redirect ke halaman pembayaran dengan orderId
+        navigate(`/payment/${orderId}`);
+      } else {
+        console.error("Booking gagal: fbo_order_id tidak ditemukan", response);
+        alert("Booking gagal, silakan coba lagi.");
+      }
+    } catch (error) {
+      console.error(
+        "Terjadi kesalahan:",
+        error.response?.data || error.message
+      );
+      alert("Terjadi kesalahan saat booking, silakan coba lagi.");
+    }
+  };
 
   return (
     <div>
       <section className="">
         <form
-          action="/payment"
+          // action="/payment"
           className={`needs-validation ${validated ? "was-validated" : ""}`}
-          noValidate
+          // noValidate
           onSubmit={handleSubmit}
         >
           <div className="d-flex mt-3 mb-3 m-5 ">
@@ -700,7 +690,7 @@ const handleDropoffReturnChange = (event) => {
                         style={{ marginBottom: "5px", marginTop: "10px" }}
                       >
                         <b>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedDeparture
                             ? formatCurrency(
                                 selectedDeparture.fba_adult_publish
@@ -712,7 +702,7 @@ const handleDropoffReturnChange = (event) => {
                       <p className="opacity-75" style={{ marginBottom: "5px" }}>
                         {" "}
                         <b>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedDeparture
                             ? formatCurrency(
                                 selectedDeparture.fba_child_publish
@@ -775,7 +765,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedDeparture
                                   ? formatCurrency(
                                       selectedDeparture.fba_adult_publish
@@ -790,7 +780,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedDeparture
                                   ? formatCurrency(
                                       selectedDeparture.fba_child_publish
@@ -805,7 +795,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedDeparture.fba_infant_publish || " 0 "}X{" "}
                                 {infant} Infant
                               </h4>
@@ -946,7 +936,7 @@ const handleDropoffReturnChange = (event) => {
                         style={{ marginBottom: "5px", marginTop: "10px" }}
                       >
                         <b>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedReturn
                             ? formatCurrency(selectedReturn.fba_adult_publish)
                             : " "}
@@ -955,7 +945,7 @@ const handleDropoffReturnChange = (event) => {
                       </p>
                       <p className="opacity-75" style={{ marginBottom: "5px" }}>
                         <b>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedReturn
                             ? formatCurrency(selectedReturn.fba_child_publish)
                             : " "}
@@ -1016,7 +1006,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedReturn
                                   ? formatCurrency(
                                       selectedReturn.fba_adult_publish
@@ -1031,7 +1021,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedReturn
                                   ? formatCurrency(
                                       selectedReturn.fba_child_publish
@@ -1046,7 +1036,7 @@ const handleDropoffReturnChange = (event) => {
                                   fontSize: "20px",
                                 }}
                               >
-                                {currency.cy_code}{" "}
+                                {currencyCode}{" "}
                                 {selectedReturn.fba_infant_publish || " 0 "} X{" "}
                                 {infant} Infant
                               </h4>
@@ -1132,8 +1122,10 @@ const handleDropoffReturnChange = (event) => {
                   <input
                     type="text"
                     name="ctc_name"
-                    value={contact.ctc_name}
-                    onChange={handleContactChange}
+                    // value={contact.ctc_name}
+                    // onChange={handleContactChange}
+                    value={contactName}
+                    onChange={(e) => setName(e.target.value)}
                     className="form-control py-2"
                     id="nameContact"
                     placeholder="Name"
@@ -1151,8 +1143,10 @@ const handleDropoffReturnChange = (event) => {
                   <input
                     type="text"
                     name="ctc_email"
-                    value={contact.ctc_email}
-                    onChange={handleContactChange}
+                    // value={contact.ctc_email}
+                    // onChange={handleContactChange}
+                    value={contactEmail}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="form-control py-2"
                     id="validationCustom02"
                     placeholder="contact@gmail.com"
@@ -1172,15 +1166,19 @@ const handleDropoffReturnChange = (event) => {
                   <input
                     type="text"
                     name="ctc_phone"
-                    value={contact.ctc_phone}
-                    onChange={handleContactChange}
+                    // value={contact.ctc_phone}
+                    // onChange={handleContactChange}
+                    value={contactPhone}
+                    onChange={(e) => setPhone(e.target.value)}
                     className="form-control py-2"
                     id="validationCustom03"
                     placeholder="+62XXXXXXXXXXX"
+                    pattern="^\+62\d{8,13}$"
                     required
                   />
                   <div className="invalid-feedback">
-                    Please provide a valid phone number.
+                    {/* Please provide a valid phone number. */}
+                    Please provide a valid phone number (e.g., +62XXXXXXXXXXX).
                   </div>
                 </div>
                 <div className="col-md-6 mb-4">
@@ -1227,9 +1225,9 @@ const handleDropoffReturnChange = (event) => {
                 >
                   Passenger Details
                 </h4>
-                {renderPassengerForms(adult, "adult")}
-                {renderPassengerForms(child, "child")}
-                {renderPassengerForms(infant, "infant")}
+                {renderPassengerForms(adult, "adult", 0)}
+                {renderPassengerForms(child, "child", adult)}
+                {renderPassengerForms(infant, "infant", adult + child)}
               </div>
 
               {/* Form Pickup Shuttle Departure*/}
@@ -1514,7 +1512,7 @@ const handleDropoffReturnChange = (event) => {
                       <div className="d-flex justify-content-between">
                         <div>Adult {adult}x</div>
                         <div>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedDeparture
                             ? formatCurrency(
                                 selectedDeparture.fba_adult_publish
@@ -1525,7 +1523,7 @@ const handleDropoffReturnChange = (event) => {
                       <div className="d-flex justify-content-between">
                         <div>Child {child}x</div>
                         <div>
-                          {currency.cy_code}{" "}
+                          {currencyCode}{" "}
                           {selectedDeparture
                             ? formatCurrency(
                                 selectedDeparture.fba_child_publish
@@ -1536,14 +1534,13 @@ const handleDropoffReturnChange = (event) => {
                       <div className="d-flex justify-content-between">
                         <div>Infant {infant}x</div>
                         <div>
-                          {/* {currency.cy_code} {selectedDeparture.fba_infant_publish || " 0 "} */}
+                          {/* {currency} {selectedDeparture.fba_infant_publish || " 0 "} */}
                         </div>
                       </div>
                       <div className="d-flex justify-content-between border-bottom">
                         <div>Subtotal</div>
                         <div>
-                          {currency.cy_code}{" "}
-                          {departureSubtotal.toLocaleString()}
+                          {currencyCode} {departureSubtotal.toLocaleString()}
                         </div>
                       </div>
 
@@ -1559,7 +1556,7 @@ const handleDropoffReturnChange = (event) => {
                           <div className="d-flex justify-content-between">
                             <div>Adult {adult}x</div>
                             <div>
-                              {currency.cy_code}{" "}
+                              {currencyCode}{" "}
                               {selectedReturn
                                 ? formatCurrency(
                                     selectedReturn.fba_adult_publish
@@ -1570,7 +1567,7 @@ const handleDropoffReturnChange = (event) => {
                           <div className="d-flex justify-content-between">
                             <div>Child {child}x</div>
                             <div>
-                              {currency.cy_code}{" "}
+                              {currencyCode}{" "}
                               {selectedReturn
                                 ? formatCurrency(
                                     selectedReturn.fba_child_publish
@@ -1581,15 +1578,14 @@ const handleDropoffReturnChange = (event) => {
                           <div className="d-flex justify-content-between">
                             <div>Infant {infant}x</div>
                             <div>
-                              {currency.cy_code}{" "}
+                              {currencyCode}{" "}
                               {selectedReturn.fba_infant_publish || " 0 "}
                             </div>
                           </div>
                           <div className="d-flex justify-content-between border-bottom">
                             <div>Subtotal</div>
                             <div>
-                              {currency.cy_code}{" "}
-                              {returnSubtotal.toLocaleString()}
+                              {currencyCode} {returnSubtotal.toLocaleString()}
                             </div>
                           </div>
                         </>
@@ -1598,13 +1594,22 @@ const handleDropoffReturnChange = (event) => {
                       <div className="d-flex justify-content-between fw-bolder mt-2 border-bottom">
                         <div>Total</div>
                         <div>
-                          {currency.cy_code} {total.toLocaleString()}
+                          {currencyCode} {total.toLocaleString()}
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-center mx-auto mt-2 mb-3">
+                    {/* <div className="text-center mx-auto mt-2 mb-3">
                       <PaymentComponent required />
+                    </div> */}
+
+                    <div className="text-center mx-auto mt-2 mb-3">
+                      <PaymentComponent ref={paymentRef} />
+                      {validationError && (
+                        <div className="text-danger mt-2">
+                          Silakan pilih metode pembayaran.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

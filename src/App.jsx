@@ -50,7 +50,7 @@ function App() {
             Component={TransportDetailPage}
           />
           <Route path="/booking" Component={BookingPage} element={<BookingPage />}/>
-          <Route path="/payment" Component={PaymentPage} />
+          <Route path="/payment/:orderId" Component={PaymentPage} />
 
           {/* route blogs */}
           <Route path="/blogs-details" Component={BlogsDetailPage} />
